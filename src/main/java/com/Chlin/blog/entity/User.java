@@ -6,8 +6,8 @@ import java.util.Date;
 import com.baomidou.mybatisplus.annotation.Version;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serializable;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+//import io.swagger.annotations.ApiModel;
+//import io.swagger.annotations.ApiModelProperty;
 
 /**
  * <p>
@@ -17,7 +17,7 @@ import io.swagger.annotations.ApiModelProperty;
  * @author Chlin
  * @since 2023-08-29
  */
-@ApiModel(value="User对象", description="")
+//@ApiModel(value="User对象", description="")
 public class User implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -31,7 +31,7 @@ public class User implements Serializable {
 
     private String realName;
 
-        @ApiModelProperty(value = "用户类型:0-学生,1-员工")
+//        @ApiModelProperty(value = "用户类型:0-学生,1-员工")
         private Integer type;
 
     private String studentId;

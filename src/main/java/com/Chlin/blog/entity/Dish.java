@@ -6,8 +6,8 @@ import java.util.Date;
 import com.baomidou.mybatisplus.annotation.Version;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serializable;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+//import io.swagger.annotations.ApiModel;
+//import io.swagger.annotations.ApiModelProperty;
 
 /**
  * <p>
@@ -17,7 +17,7 @@ import io.swagger.annotations.ApiModelProperty;
  * @author Chlin
  * @since 2023-08-29
  */
-@ApiModel(value="Dish对象", description="")
+//@ApiModel(value="Dish对象", description="")
 public class Dish implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -35,7 +35,7 @@ public class Dish implements Serializable {
 
     private Integer inventory;
 
-        @ApiModelProperty(value = "状态:0-下架,1-上架")
+//        @ApiModelProperty(value = "状态:0-下架,1-上架")
         private Integer status;
 
     private Date createTime;

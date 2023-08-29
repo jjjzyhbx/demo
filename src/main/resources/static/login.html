@@ -137,14 +137,17 @@
         methods: {
             login() {
                 var users={
-                    id:this.user.id,
+                    studentId:this.user.id,
                     password: this.user.password,
-                    admin:this.user.value1
+                    type :Number(this.user.value1)
                 }
 
                 if(ans&&ans1){
-                    axios.post("http://localhost:90/myArticle_war/forwards",users).then(function (resp) {
+                    axios.post("http://localhost:90/blog/user/login",users).then(function (resp) {
+
                         var a=resp.data;
+                        alert(a.value3)
+                        // 返回一个验证，使其登录成功{value3:true or false}
                         if(a.value3)
                         {
                             window.location.href='FirstPage.html'
@@ -152,8 +155,6 @@
                         else {
                             alert("登录失败，你可能没有注册该账户");
                         }
-
-
                     })
                 }
                 else{
@@ -170,9 +171,9 @@
                 }
                 if(this.user.value1)
                 {
-                    axios.post("http://localhost:90/myArticle_war/re").then(function (resp) {
+                    axios.post("http://localhost:90/remember").then(function (resp) {
                         var a1 = resp.data;
-                        _this.user.id=a1.id;
+                        _this.user.id=a1.studentId;
                         _this.user.password=a1.password;
 
                     })

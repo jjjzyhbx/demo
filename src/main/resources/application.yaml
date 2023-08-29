@@ -1,5 +1,5 @@
 server:
-  port: 8888
+  port: 90
 #spring.profiles.active=dev
 spring.datasource.username: root
 spring.datasource.password: 2605274496

@@ -8,8 +8,9 @@ import org.springframework.context.annotation.ComponentScan;
 //扫描文件夹
 
 @SpringBootApplication
-//@MapperScan("com.mapper")
-//@ComponentScan(basePackages = "com.mapper")
+@MapperScan("com.Chlin.blog.mapper")
+@ComponentScan("com.Chlin.blog.mapper")
+@ComponentScan("com.Chlin.blog.controller")
 public class Application {
     public static void main(String[] args) {
         SpringApplication.run(Application.class,args);

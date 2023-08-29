@@ -6,8 +6,8 @@ import java.util.Date;
 import com.baomidou.mybatisplus.annotation.Version;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serializable;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+//import io.swagger.annotations.ApiModel;
+//import io.swagger.annotations.ApiModelProperty;
 
 /**
  * <p>
@@ -17,7 +17,7 @@ import io.swagger.annotations.ApiModelProperty;
  * @author Chlin
  * @since 2023-08-29
  */
-@ApiModel(value="Order对象", description="")
+//@ApiModel(value="Order对象", description="")
 public class Order implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -35,10 +35,10 @@ public class Order implements Serializable {
 
     private BigDecimal paidAmount;
 
-        @ApiModelProperty(value = "状态:0-未付款,1-已付款")
+//        @ApiModelProperty(value = "状态:0-未付款,1-已付款")
         private Integer status;
 
-        @ApiModelProperty(value = "支付类型:1-余额;2-现金")
+//        @ApiModelProperty(value = "支付类型:1-余额;2-现金")
         private Integer payType;
 
     private Date completeTime;

@@ -4,8 +4,8 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.Version;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serializable;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+//import io.swagger.annotations.ApiModel;
+//import io.swagger.annotations.ApiModelProperty;
 
 /**
  * <p>
@@ -15,7 +15,7 @@ import io.swagger.annotations.ApiModelProperty;
  * @author Chlin
  * @since 2023-08-29
  */
-@ApiModel(value="Department对象", description="")
+//@ApiModel(value="Department对象", description="")
 public class Department implements Serializable {
 
     private static final long serialVersionUID = 1L;
