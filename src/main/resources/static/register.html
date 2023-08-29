@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="axios.js"></script>
+    <script src="vue.js"></script>
+    <script src="index.js"></script>
+    <link rel="stylesheet" href="index.css">
+    <style>
+        .backgrounds{
+            margin:auto;
+            height: 50px;
+            width: 300px;
+            /*text-align:center;*/
+            background-color:#fff;
+            border-radius: 20px;
+            position: absolute;
+            top: 1px;
+            left: 0;
+            right: 0;
+            bottom: 0;
+        }
+        .err_msg{
+            color: red;
+            border: red;
+        }
+    </style>
+</head>
+<body>
+<div class="backgrounds">
+    <div id="app">
+        <el-form :label-position="labelPosition" label-width="80px"  :model="user" >
+            <el-form-item label="昵称:">
+                <el-input v-model="user.username"></el-input>
+            </el-form-item>
+            <el-form-item label="账号:">
+                <el-input v-model="user.id" id="ids"></el-input>
+                <span id="username_err" class="err_msg" style="display:none" >账号格式错误</span>
+            </el-form-item>
+            <el-form-item label="密码:">
+                <el-input v-model="user.password" type="password" id="password"></el-input>
+                <span id="password_err" class="err_msg" style="display: none"> 密码格式不对</span>
+            </el-form-item>
+            <el-form-item label="确认密码:">
+                <el-input v-model="user.passwords" type="password" id="passwords"></el-input>
+            </el-form-item>
+        </el-form>
+        <table>
+            <tr>
+                <td>
+                    <el-button type="primary" round @click="register">注册</el-button>
+                </td>
+                <td>
+                    <el-button type="primary" round @click="goBackLogin">返回登录</el-button>
+                </td>
+            </tr>
+        </table>
+
+
+    </div>
+</div>
+<script>
+    var ans=false;
+    var ans1=false;
+    // window.onload=function(){
+    //     axios.post("http://localhost:90/Demo/cookies",this.user.value1).then(function(resp){
+    //         alert(resp.data())
+    //
+    //     })
+    //
+    // }
+    new Vue({
+        el:"#app",
+        data() {
+            return {
+                labelPosition: 'left',
+                user: {
+                    username:'',
+                    id: '',
+                    password: '',
+                    passwords: '',
+                }
+
+            }
+        },
+        mounted(){
+            var idInput= document.getElementById("ids");
+            idInput.onblur=function (){
+                var id=idInput.value.trim();
+                if(id==='')
+                {
+                    document.getElementById("username_err").style.display='';
+                    ans=false;
+                }
+                else if(id.length<8||id.length>12)
+                {
+                    ans=false;
+                }
+                else{
+                    document.getElementById("username_err").style.display='none';
+                    ans=true;
+                }
+
+            };
+            var passwordInput =document.getElementById("password");
+            passwordInput.onblur=function ()
+            {
+                var password=passwordInput.value.trim();
+
+                if(password.length>=8&&password.length<=16)
+                {
+                    document.getElementById("password_err").style.display='none';
+                    ans1=true;
+                }else
+                {
+                    document.getElementById("password_err").style.display='';
+                    ans1=false;
+                }
+            }
+
+        },
+        methods: {
+            register() {
+                if(this.user.password===this.user.passwords){
+                if((ans&&ans1)){
+
+                    axios.post("http://localhost:90/myArticle_war/forwards",this.user).then(function (resp) {
+                        var ans=resp.data;
+                        if(ans.value4){
+                            alert("注册成功，请登录")
+                            window.location.href='login.html';
+                        }
+                        else{
+                            alert("注册失败")
+                        }
+                    })
+
+                }
+                else{
+                    alert("错误")
+                }
+                }
+                else
+                {
+                    alert("两次密码不一致")
+                }
+            },
+            goBackLogin(){
+                window.location.href='login.html'
+
+            }
+        }
+    })
+</script>
+</body>
+</html>

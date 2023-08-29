@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="axios.js"></script>
+    <script src="vue.js"></script>
+    <script src="index.js"></script>
+    <link rel="stylesheet" href="index.css">
+    <style>
+        .el-header, .el-footer {
+            background-color: #FFFFFF;
+            color: #333;
+            text-align: center;
+            line-height: 40px;
+        }
+
+        .el-aside {
+            background-color:#F2F6FC;
+            color: #333;
+            text-align: center;
+            line-height: 650px;
+        }
+
+        .el-main {
+            background-color: #FFFFFF;
+            color: #FFFFFF;
+            text-align: center;
+            line-height: 10px;
+        }
+        .articleName{
+            text-align: center;
+        }
+        /*.articleShow{*/
+
+        /*    margin:auto;*/
+        /*    !*height: 600px;*!*/
+        /*    width: 800px;*/
+        /*    !*text-align:center;*!*/
+        /*    background-color:#FFFFFF;*/
+        /*    border-radius: 20px;*/
+        /*    position: absolute;*/
+        /*    top: 1px;*/
+        /*    left: 0;*/
+        /*    right: 0;*/
+        /*    bottom: 0;*/
+        /*    white-space:pre-wrap;*/
+
+        /*}*/
+        #text{
+            overflow:hidden;
+            background: #ffffff;
+            width:800px;
+            font-family: "Helvetica Neue";
+            line-height:1.5;
+            font-size: 20px;
+            box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+            text-align: center;
+
+
+        }
+        #author{
+            margin-left: 900px;
+        }
+        #date{
+            margin-left: 900px;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+
+<!--    <el-container>-->
+
+
+
+
+
+<!--    </el-container>-->
+
+    <el-page-header @back="goBack" content="阅读">
+    </el-page-header>
+    <el-container>
+    <template>
+        <el-header v-model="re.articleName">{{re.articleName}}</el-header>
+
+        <span id="author" v-model="re.authorName">作者：{{re.authorName}}</span>
+        <span id="date">录入时间：{{re.date}}</span>
+
+        <el-main >
+                <textarea id="text"
+                       :rows="30"
+                       cols="50"
+                          disabled
+           v-model="re.article" >
+                </textarea>
+<!--            {{re.article}}-->
+        </el-main>
+<!--                <el-empty > -->
+<!--            </el-empty>-->
+<!--        </div>-->
+    </template>
+        <el-footer>
+            <el-button style="margin-top: 12px; margin-left: 10px" @click="last">上一篇</el-button>
+            <el-button style="margin-top: 12px; margin-left: 10px" @click="back">{{updata?'保存':'修改'}}</el-button>
+<!--            <el-button style="margin-top: 12px; margin-right: 10px" @click="back">保存</el-button>-->
+            <el-button  id="concern" @click="concern">{{shou?'取消收藏':'收藏'}}</el-button>
+            <el-button style="margin-top: 12px; margin-right: 10px" @click="next">下一篇</el-button>
+        </el-footer>
+    </el-container>
+</div>
+
+<script>
+    var reads;
+    new Vue({
+        el:"#app",
+        data() {
+
+            return {
+                shou:false,
+                updata:false,
+                activeIndex: '3',
+                re:{
+                    articleName: '',
+                    article: '',
+                    authorName: '',
+                    date:'',
+                    concern:false
+                }
+            };
+        },
+        mounted(){
+            var _this=this
+            window.onload=function(){
+                // document.getElementById("text")
+                axios.post("http://localhost:90/myArticle_war/reads").then(function (resp) {
+                     var da=resp.data;
+                     da.date=timestampToTime(resp.data.date)
+                    _this.re=da;
+                    if(_this.re.concern){
+                        _this.shou=!_this.shou;
+                    }
+                })
+
+
+
+            }
+
+        },
+        methods: {
+            goBack() {
+                window.location.href='FirstPage.html'
+            },
+            next(){
+                alert(this.re.article)
+            },
+
+
+
+
+            back(){
+                var up=document.getElementById("text");
+                var c=document.getElementById("text");
+                this.updata=!this.updata;
+                if(this.updata){
+                    up.removeAttribute("disabled");
+                }else
+                {
+
+                c.setAttribute("disabled","disabled")
+                axios.post("http://localhost:90/myArticle_war/revise",this.re).then(function (resp) {
+                    var ans=resp.data
+                    if(ans.an){
+                        alert("修改成功");
+                    }
+                    else{
+                        alert("修改失败");
+                    }
+                })
+            }},
+            concern(){
+                var _this=this;
+                var as={
+                    articleName: _this.re.articleName,
+                    article: _this.re.article,
+                    authorName: _this.re.authorName,
+                    date:_this.re.date,
+                }
+                if(this.shou)
+                {
+                    axios.post("http://localhost:90/myArticle_war/celConcern",as).then(function (resp){
+                        var ans1=resp.data;
+                        if(ans1.value2)
+                        {
+                            _this.shou=!_this.shou
+                        }
+                    })
+
+                }else {
+                axios.post("http://localhost:90/myArticle_war/celConcern",as).then(function (resp){
+                    var ans=resp.data;
+                    if(ans.value1)
+                    {
+                        alert("收藏成功")
+                        _this.shou=!_this.shou
+                    }
+                    else{
+                        alert("收藏失败，不能收藏自己的作品")
+                    }
+
+                })
+                }
+            }
+
+        }
+    })
+    function timestampToTime(timestamp) {
+        var date = new Date(timestamp);
+        var Y = date.getFullYear() + '-';
+        var M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1):date.getMonth()+1) + '-';
+        var D = (date.getDate()< 10 ? '0'+date.getDate():date.getDate())+ ' ';
+        var h = (date.getHours() < 10 ? '0'+date.getHours():date.getHours())+ ':';
+        var m = (date.getMinutes() < 10 ? '0'+date.getMinutes():date.getMinutes()) + ':';
+        var s = date.getSeconds() < 10 ? '0'+date.getSeconds():date.getSeconds();
+        return Y+M+D+h+m+s;
+    }
+</script>
+</body>
+</html>

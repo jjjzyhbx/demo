@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>concern</title>
+  <script src="axios.js"></script>
+  <script src="vue.js"></script>
+  <script src="index.js"></script>
+  <link rel="stylesheet" href="index.css">
+</head>
+<body>
+<div id="app">
+  <el-page-header @back="back" content="">
+  </el-page-header>
+  <el-tabs type="border-card" v-model="ins" @tab-click="loadPage">
+    <el-tab-pane label="个人页面" name="first">
+      <template>
+        <div class="demo-type">
+          <el-avatar :size="150" src="" @error="errorHandler">
+            <img src=""/>
+          </el-avatar>
+        </div>
+        <el-skeleton :rows="3" animated />
+      </template>
+
+      <el-descriptions class="margin-top" title="" :column="10" >
+        <template slot="extra">
+          <el-button type="primary" size="small"  v-model="but" @click="Concerns">{{but?'取消关注':'关注'}}</el-button>
+        </template>
+        <el-descriptions-item label="用户名" v-model="his.username">{{his.username}}</el-descriptions-item>
+        <el-descriptions-item label="id" v-model="his.id">{{his.id}}</el-descriptions-item>
+        <el-descriptions-item label="居住地"></el-descriptions-item>
+        <el-descriptions-item label="个性签名" v-model="his.signature">
+          <el-tag size="small">{{his.signature}}</el-tag>
+        </el-descriptions-item>
+        <!--                <el-descriptions-item label="注册时间">date</el-descriptions-item>-->
+      </el-descriptions>
+      </template>
+
+      <el-collapse v-model="activeNames" @change="handleChange"  accordion>
+        <el-collapse-item title="它的文章" name="1" >
+          <template >
+            <el-table
+                    :data="hisArticle"
+                    style="width: 100%"
+                    :default-sort = "{prop: 'date', order: 'descending'}"
+                    :data="tableData"
+                    tooltip-effect="dark"
+                    style="width: 100%"
+                    @selection-change="handleSelectionChange"
+                    @cell-click="readArticles"
+
+            >
+              <el-table-column
+                      type="index"
+                      width="50">
+              </el-table-column>
+              <el-table-column
+                      prop="articleName"
+                      label="作品名称"
+                      sortable
+                      align="center"
+                      width="180">
+              </el-table-column>
+              <el-table-column
+                      prop="date"
+                      label="发布时间"
+                      align="center"
+                      sortable
+              >
+              </el-table-column>
+              <el-table-column
+                      label="操作"
+                      align="center"
+              >
+                <template slot-scope="scope">
+                  <el-button size="mini" @click.native.prevent="downloads(scope.row)">下载</el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+          </template>
+        </el-collapse-item>
+        <el-collapse-item title="收藏" name="2">
+          <template >
+            <el-table
+                    :data="hisConcern"
+                    style="width: 100%"
+                    :default-sort = "{prop: 'date', order: 'descending'}"
+                    :data="tableData"
+                    tooltip-effect="dark"
+                    style="width: 100%"
+                    @selection-change="handleSelectionChange"
+                    @cell-click="readArticles"
+
+            >
+              <el-table-column
+                      type="index"
+                      width="50">
+              </el-table-column>
+              <el-table-column
+                      prop="articleName"
+                      label="作品名称"
+                      sortable
+                      align="center"
+                      width="180">
+              </el-table-column>
+              <el-table-column
+                      prop="date"
+                      label="发布时间"
+                      align="center"
+                      sortable
+              >
+              </el-table-column>
+              <el-table-column
+                      prop="authorName"
+                      label="作者"
+                      align="center"
+                      sortable
+                      width="180">
+              </el-table-column>
+              <el-table-column
+                      label="操作"
+                      align="center"
+              >
+                <template slot-scope="scope">
+                  <el-button size="mini" @click.native.prevent="downloads(scope.row)">下载</el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+          </template>
+        </el-collapse-item>
+        <el-collapse-item title="关注" name="3">
+          <div>简化流程：设计简洁直观的操作流程；</div>
+          <div>清晰明确：语言表达清晰且表意明确，让用户快速理解进而作出决策；</div>
+          <div>帮助用户识别：界面简单直白，让用户快速识别而非回忆，减少用户记忆负担。</div>
+        </el-collapse-item>
+        <el-collapse-item title="浏览记录" name="4">
+          <template >
+            <el-table
+                    :data="BrowsingRecords"
+                    style="width: 100%"
+                    :default-sort = "{prop: 'date', order: 'descending'}"
+                    ref="multipleTable"
+                    :data="tableData"
+                    tooltip-effect="dark"
+                    style="width: 100%"
+                    @selection-change="handleSelectionChange"
+                    @cell-click="readArticles"
+
+            >
+              <el-table-column
+                      prop="articleName"
+                      label="作品名称"
+                      sortable
+                      align="center"
+                      width="180">
+              </el-table-column>
+              <el-table-column
+                      prop="authorName"
+                      label="作者"
+                      align="center"
+                      sortable
+                      width="180">
+              </el-table-column>
+              <el-table-column
+                      prop="date"
+                      label="发布时间"
+                      align="center"
+                      sortable
+              >
+              </el-table-column>
+              <el-table-column
+                      label="操作"
+                      align="center"
+              >
+                <el-button size="mini">下载</el-button>
+
+                <!--                                    @click="concern"-->
+              </el-table-column>
+            </el-table>
+          </template>
+        </el-collapse-item>
+        <el-collapse-item title="管理账号" name="5">
+          <div>用户决策：根据场景可给予用户操作建议或安全提示，但不能代替用户进行决策；</div>
+          <div>结果可控：用户可以自由的进行操作，包括撤销、回退和终止当前操作等。</div>
+        </el-collapse-item>
+        <el-collapse-item title="修改资料卡片" >
+          <div>用户决策：根据场景可给予用户操作建议或安全提示，但不能代替用户进行决策；</div>
+          <div>结果可控：用户可以自由的进行操作，包括撤销、回退和终止当前操作等。</div>
+        </el-collapse-item>
+      </el-collapse>
+    </el-tab-pane>
+  </el-tabs>
+</div>
+<script>
+  new Vue({
+    el:"#app",
+    data(){
+      return {
+        but:false,
+        ins:'first',
+        activeNames:['1'],
+        /**
+         *wd
+         */
+        his:{
+          username:'',
+          id:'',
+          signature:'',
+          co:false
+        },
+        hisArticle:[{
+          articleName:'0',
+          authorName: '1',
+          date: '2',
+          article:'3'
+        },],
+        hisConcern:[{
+          articleName:'xsui',
+          authorName: 'dsoih',
+          date: 'skjbc',
+          article:'3'
+        },],
+
+      };
+      }
+    ,
+    mounted(){
+      var _this=this;
+      window.onload=function (){
+        axios.post("http://localhost:90/myArticle_war/loadCencorn1").then(function (resp) {
+          var m=resp.data;
+            _this.his.id = m.id;
+            _this.his.username = m.username;
+            _this.his.signature = m.signature;
+            _this.his.co=m.concern;
+            if(_this.his.co){
+              _this.but = !_this.but
+            }
+        })
+
+
+      }
+    },
+    methods: {
+      back() {
+        window.location.href = 'FirstPage.html'
+      }
+      ,
+      cancelConcern(row) {
+        var c = {
+          articleName: row.articleName,
+          authorName: row.authorName,
+          article: row.article,
+          date: row.date
+        }
+        axios.post("http://localhost:90/myArticle_war/celConcern", c).then(function (resp) {
+          var a = resp.data;
+          if (a.value2) {
+            alert("取消成功")
+          } else {
+            alert("取消失败")
+          }
+
+        })
+      },
+      Concerns() {
+        var _this = this;
+        var as = this.his;
+        if (this.but) {
+          axios.post("http://localhost:90/myArticle_war/concerns1", as).then(function (resp) {
+            var ans1 = resp.data;
+            if (ans1.value2) {
+              _this.but = !_this.but
+            }
+          })
+
+        } else {
+          axios.post("http://localhost:90/myArticle_war/concerns1", as).then(function (resp) {
+            var ans = resp.data;
+            if (ans.value1) {
+              alert("关注成功")
+              _this.but = !_this.but
+            } else {
+              alert("关注失败")
+            }
+
+          })
+        }
+
+      }
+
+    }
+
+  })
+</script>
+</body>
+</html>

@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="axios.js"></script>
+    <script src="vue.js"></script>
+    <script src="index.js"></script>
+    <link rel="stylesheet" href="index.css">
+    <style>
+        .backgrounds{
+            margin:auto;
+            height: 50px;
+            width: 300px;
+            /*text-align:center;*/
+            background-color:#fff;
+            border-radius: 20px;
+            position: absolute;
+            top: 1px;
+            left: 0;
+            right: 0;
+            bottom: 0;
+        }
+        .err_msg{
+            color: red;
+            border: red;
+        }
+    </style>
+</head>
+<body>
+<div class="backgrounds">
+    <div id="app">
+        <el-form :label-position="labelPosition" label-width="80px"  :model="user" >
+            <el-form-item label="账号:">
+                <el-input v-model="user.id" id="ids"></el-input>
+                <span id="username_err" class="err_msg" style="display:none" >账号错误</span>
+            </el-form-item>
+            <el-form-item label="密码:">
+                <el-input v-model="user.password" type="password" id="password"></el-input>
+                <span id="password_err" class="err_msg" style="display: none"> 密码格式不对</span>
+            </el-form-item>
+        </el-form>
+
+
+        <table>
+            <tr div style="margin-left: 20px">
+                <td>
+                    <el-switch
+                            v-model="user.value1"
+                            active-text="记住密码"
+                            @change="remember"
+                    >
+                    </el-switch>
+                </td>
+
+            </tr>
+            <tr>
+                <td><el-button type="primary" round @click="login()">登录</el-button></td>
+                <td><el-button type="primary" round @click="register">注册</el-button></td>
+            </tr>
+        </table>
+
+
+    </div>
+</div>
+<script>
+    var ans=true;
+    var ans1=true;
+    // window.onload=function(){
+    //     axios.post("http://localhost:90/Demo/cookies",this.user.value1).then(function(resp){
+    //         alert(resp.data())
+    //
+    //     })
+    //
+    // }
+    axios.defaults.withCredentials=true;
+    new Vue({
+        el:"#app",
+        data() {
+            return {
+                labelPosition: 'left',
+                user: {
+                    id: '',
+                    password: '',
+                    value1:true
+                }
+
+            }
+        },
+        mounted(){
+            var _this=this;
+            window.onload=function () {
+                if (_this.user.value1) {
+                    axios.post("http://localhost:90/myArticle_war/re-password").then(function (resp) {
+                        var a1 = resp.data;
+                        _this.user.id=a1.id;
+                        _this.user.password=a1.password;
+
+                    })
+                }
+            }
+            var idInput= document.getElementById("ids");
+            idInput.onblur=function (){
+                var id=idInput.value.trim();
+                if(id==='')
+                {
+                    document.getElementById("username_err").style.display='';
+                    ans=false;
+                }
+                else if(id.length<8||id.length>12)
+                {
+                    ans=false;
+                }
+                else{
+                    document.getElementById("username_err").style.display='none';
+                    ans=true;
+                }
+
+            };
+            var passwordInput =document.getElementById("password");
+            passwordInput.onblur=function ()
+            {
+                var password=passwordInput.value.trim();
+
+                if(password.length>=8&&password.length<=16)
+                {
+                    document.getElementById("password_err").style.display='none';
+                    ans1=true;
+                }else
+                {
+                    document.getElementById("password_err").style.display='';
+                    ans1=false;
+                }
+            }
+
+        },
+        methods: {
+            login() {
+                var users={
+                    id:this.user.id,
+                    password: this.user.password,
+                    admin:this.user.value1
+                }
+
+                if(ans&&ans1){
+                    axios.post("http://localhost:90/myArticle_war/forwards",users).then(function (resp) {
+                        var a=resp.data;
+                        if(a.value3)
+                        {
+                            window.location.href='FirstPage.html'
+                        }
+                        else {
+                            alert("登录失败，你可能没有注册该账户");
+                        }
+
+
+                    })
+                }
+                else{
+                    alert("错误")
+                }
+            },
+            register(){
+                window.location.href='register.html'
+            }
+            ,remember(){
+                var _this=this;
+                var values={
+                    value1:this.user.value1
+                }
+                if(this.user.value1)
+                {
+                    axios.post("http://localhost:90/myArticle_war/re").then(function (resp) {
+                        var a1 = resp.data;
+                        _this.user.id=a1.id;
+                        _this.user.password=a1.password;
+
+                    })
+                }
+                else{
+                    // _this.user.id='';
+                    _this.user.password='';
+                }
+            }
+        }
+    })
+</script>
+</body>
+</html>>

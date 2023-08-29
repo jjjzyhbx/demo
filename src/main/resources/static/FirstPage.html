@@ -1,0 +1,1122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+  <script src="axios.js"></script>
+  <script src="vue.js"></script>
+  <script src="index.js"></script>
+  <link rel="stylesheet" href="index.css">
+    <script type="text/javascript" src="core.min.js"></script>
+    <style>
+        .el-tabs__content{
+            height: calc(100vh - 110px);
+            overflow-y: auto;
+        }
+        .el-carousel__item h3 {
+            color: #475669;
+            font-size: 18px;
+            opacity: 0.75;
+            line-height: 300px;
+            margin: 0;
+        }
+
+        .el-carousel__item:nth-child(2n) {
+            background-color: #99a9bf;
+        }
+
+        .el-carousel__item:nth-child(2n+1) {
+            background-color: #d3dce6;
+        }
+
+    </style>
+</head>
+<body>
+<div id="app">
+    <el-tabs type="border-card" v-model="ins" @tab-click="loadPage">
+        <el-tab-pane label="我的">
+            <template>
+                <div class="demo-type">
+                    <el-avatar :size="150" src="" @error="errorHandler">
+                        <img src=""/>
+                    </el-avatar>
+                </div>
+                        <el-skeleton :rows="3" animated />
+            </template>
+
+
+            <el-descriptions class="margin-top" title="" :column="3" >
+                <template slot="extra">
+                    <el-button type="primary" size="small" @click="dialogFormVisible = true">编辑</el-button>
+                    <el-dialog title="" :visible.sync="dialogFormVisible">
+                        <el-container>
+                            用户名:<el-input v-model="usernames" placeholder="新的用户名" ></el-input>
+                            个性签名：<el-input v-model="signatures" placeholder="新的个性签名"></el-input>
+                            <el-footer align="right">
+                                <el-button type="primary" round @click="newUserMessage">确认修改</el-button>
+                            </el-footer>
+                        </el-container>
+                    </el-dialog>
+                </template>
+                <el-descriptions-item label="用户名" v-model="my.username">{{my.username}}</el-descriptions-item>
+                <el-descriptions-item label="id" v-model="my.id">{{my.id}}</el-descriptions-item>
+                <el-descriptions-item label="居住地"></el-descriptions-item>
+                <el-descriptions-item label="个性签名" v-model="my.signature">
+                    <el-tag size="small">{{my.signature}}</el-tag>
+                </el-descriptions-item>
+<!--                <el-descriptions-item label="注册时间">date</el-descriptions-item>-->
+            </el-descriptions>
+            </template>
+
+            <el-collapse v-model="activeNames" @change="handleChange"  accordion>
+                <el-collapse-item title="我的文章" name="1" >
+                    <template >
+                        <el-table
+                                :data="myArticle"
+                                style="width: 100%"
+                                :default-sort = "{prop: 'date', order: 'descending'}"
+                                :data="tableData"
+                                tooltip-effect="dark"
+                                style="width: 100%"
+                                @selection-change="handleSelectionChange"
+                                @row-click="readArticles"
+
+                        >
+                            <el-table-column
+                                    type="index"
+                                    width="50">
+                            </el-table-column>
+                            <el-table-column
+                                    prop="articleName"
+                                    label="作品名称"
+                                    sortable
+                                    align="center"
+                                    width="180">
+                            </el-table-column>
+                            <el-table-column
+                                    prop="date"
+                                    label="发布时间"
+                                    align="center"
+                                    sortable
+                            >
+                            </el-table-column>
+                            <el-table-column
+                                    label="操作"
+                                    align="center"
+                            >
+                                <template slot-scope="scope">
+                                    <el-button size="mini" @click.native.prevent="downloads(scope.row)">下载</el-button>
+                                    <el-button size="mini" @click.native.prevent="deletion(scope.row)">删除</el-button>
+                                </template>
+                            </el-table-column>
+                        </el-table>
+                    </template>
+                </el-collapse-item>
+                <el-collapse-item title="收藏" name="2">
+                    <template >
+                        <el-table
+                                :data="myConcern"
+                                style="width: 100%"
+                                :default-sort = "{prop: 'date', order: 'descending'}"
+                                :data="tableData"
+                                tooltip-effect="dark"
+                                style="width: 100%"
+                                @selection-change="handleSelectionChange"
+
+                        >
+                            <el-table-column
+                                    type="index"
+                                    width="50">
+                            </el-table-column>
+                            <el-table-column
+                                    prop="articleName"
+                                    label="作品名称"
+                                    sortable
+                                    align="center"
+                                    width="180">
+                                <template scope="scope">
+                                    <div class="sub-body" @click="readArticles(scope.row)">{{scope.row.articleName}}</div>
+                                </template>
+                            </el-table-column>
+                            <el-table-column
+                                    prop="date"
+                                    label="发布时间"
+                                    align="center"
+                                    sortable
+                            >
+                            </el-table-column>
+                            <el-table-column
+                                    prop="authorName"
+                                    label="作者"
+                                    align="center"
+                                    sortable
+                                    width="180">
+                                <template scope="scope">
+                                    <div class="sub-body" @click="viewAuthor(scope.row)">{{scope.row.authorName}}</div>
+                                </template>
+                            </el-table-column>
+
+                            <el-table-column
+                                    label="操作"
+                                    align="center"
+                            >
+                                <template slot-scope="scope">
+                                    <el-button size="mini" @click.native.prevent="downloads(scope.row)">下载</el-button>
+                                    <el-button size="mini" @click.native.prevent="cancelConcern(scope.row)">取消收藏</el-button>
+                                </template>
+                            </el-table-column>
+                        </el-table>
+                    </template>
+                </el-collapse-item>
+                <el-collapse-item title="关注" name="3">
+                    <template >
+                        <el-table
+                                :data="myConcerns"
+                                style="width: 100%"
+                                :default-sort = "{prop: 'date', order: 'descending'}"
+                                :data="tableData"
+                                tooltip-effect="dark"
+                                style="width: 100%"
+                                @selection-change="handleSelectionChange"
+
+                        >
+                            <el-table-column
+                                    type="index"
+                                    width="50">
+                            </el-table-column>
+                            <el-table-column
+                                    prop="username"
+                                    label="名称"
+                                    align="center"
+                                    sortable
+                                    width="180">
+                                <template scope="scope">
+                                    <div class="sub-body" @click="viewAuthors(scope.row)">{{scope.row.username}}</div>
+                                </template>
+                            </el-table-column>
+                            <el-table-column
+                                    label="操作"
+                                    align="center"
+                            >
+                                <template slot-scope="scope">
+                                    <el-button size="mini" @click.native.prevent="cancelConcerns(scope.row)">取消关注</el-button>
+                                </template>
+                            </el-table-column>
+                        </el-table>
+                    </template>
+                </el-collapse-item>
+                <el-collapse-item title="浏览记录" name="4">
+                    <template >
+                        <el-table
+                                :data="BrowsingRecords"
+                                style="width: 100%"
+                                :default-sort = "{prop: 'date', order: 'descending'}"
+                                ref="multipleTable"
+                                :data="tableData"
+                                tooltip-effect="dark"
+                                style="width: 100%"
+                                @selection-change="handleSelectionChange"
+                                @cell-click="readArticles"
+
+                        >
+                            <el-table-column
+                                    prop="articleName"
+                                    label="作品名称"
+                                    sortable
+                                    align="center"
+                                    width="180">
+                            </el-table-column>
+                            <el-table-column
+                                    prop="authorName"
+                                    label="作者"
+                                    align="center"
+                                    sortable
+                                    width="180">
+                            </el-table-column>
+                            <el-table-column
+                                    prop="date"
+                                    label="发布时间"
+                                    align="center"
+                                    sortable
+                            >
+                            </el-table-column>
+                            <el-table-column
+                                    label="操作"
+                                    align="center"
+                            >
+                                <el-button size="mini">下载</el-button>
+
+                                <!--                                    @click="concern"-->
+                            </el-table-column>
+                        </el-table>
+                    </template>
+                </el-collapse-item>
+                <el-collapse-item title="管理账号" name="5">
+                    <div>用户决策：根据场景可给予用户操作建议或安全提示，但不能代替用户进行决策；</div>
+                    <div>结果可控：用户可以自由的进行操作，包括撤销、回退和终止当前操作等。</div>
+                </el-collapse-item>
+                <el-collapse-item title="修改资料卡片" name="6">
+                    <div>用户决策：根据场景可给予用户操作建议或安全提示，但不能代替用户进行决策；</div>
+                    <div>结果可控：用户可以自由的进行操作，包括撤销、回退和终止当前操作等。</div>
+                </el-collapse-item>
+
+
+            </el-collapse>
+
+        </el-tab-pane>
+        <el-tab-pane label="文章"  >
+                        <!--       按钮列表   -->
+                        <template>
+                            <el-button type="warning" type="text" @click="BulkDeletion" id="adminDeletion" >批量删除</el-button>
+                        </template>
+                        <el-button type="primary" @click="dialogFormVisible = true" round >新增</el-button>
+                        <!--                弹出框-->
+                        <el-dialog title="" :visible.sync="dialogFormVisible">
+                            <el-container>
+                                <el-header align="center">
+                                    <el-input v-model="ne.articleName" placeholder="请输入标题" ></el-input>
+                                </el-header>
+                                    正文：
+                                    <el-input
+                                            type="textarea"
+                                            placeholder="请输入内容"
+                                            :rows="20"
+                                            v-model="ne.Article"
+                                            placeholder="    ">
+                                    </el-input>
+                                <el-footer align="right">
+                                    <el-button type="primary" round @click="newArticles">确认发布</el-button>
+                                </el-footer>
+                            </el-container>
+                        </el-dialog>
+
+                        <!-- 作品列表 -->
+
+                        <template >
+                            <el-table
+                                      :data="tableData"
+                                      style="width: 100%"
+                                      :default-sort = "{prop: 'date', order: 'descending'}"
+                                      ref="multipleTable"
+                                      :data="tableData"
+                                      tooltip-effect="dark"
+                                      style="width: 100%"
+                                      @selection-change="handleSelectionChange"
+
+
+                            >
+                                <el-table-column
+                                        type="selection"
+                                        width="55" >
+                                </el-table-column>
+                                <el-table-column
+                                type="index"
+                                width="50">
+                                </el-table-column>
+                                <el-table-column
+                                        prop="articleName"
+                                        label="作品名称"
+                                        sortable
+                                        align="center"
+                                        width="180">
+                                    <template scope="scope">
+                                        <div class="sub-body" @click="readArticles(scope.row)">{{scope.row.articleName}}</div>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column
+                                        prop="authorName"
+                                        label="作者"
+                                        align="center"
+                                        sortable
+                                        width="180">
+                                    <template scope="scope">
+                                        <div class="sub-body" @click="viewAuthor(scope.row)">{{scope.row.authorName}}</div>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column
+                                        prop="date"
+                                        label="发布时间"
+                                        align="center"
+                                        sortable
+                                        >
+                                </el-table-column>
+
+                                <el-table-column
+                                        label="操作"
+                                        align="center"
+                                >
+                                    <template slot-scope="scope">
+                                        <el-button size="mini" @click.native.prevent="downloads(scope.row)">下载</el-button>
+                                    </template>
+<!--                                    <el-button size="mini">下载</el-button>-->
+<!--                                    <el-button size="mini" >删除</el-button>-->
+                                </el-table-column>
+                            </el-table>
+                        </template>
+
+        </el-tab-pane>
+        <el-tab-pane label="搜索" >
+            <el-container>
+                <el-container>
+
+                    <el-header>
+                        <table>
+                            <tr>
+                                <td>
+                        <el-input id="Search" v-model="Searchs" placeholder="请输入内容" ></el-input>
+
+                                </td>
+                                <td>
+                                    <el-button  round @click="Search">搜索</el-button>
+                                </td>
+                            </tr>
+                        </table>
+                    </el-header>
+
+                    <el-main>
+                        <template >
+                            <el-table
+                                    :data="SearchData"
+                                    style="width: 100%"
+                                    :default-sort = "{prop: 'date', order: 'descending'}"
+                                    ref="multipleTable"
+                                    :data="tableData"
+                                    tooltip-effect="dark"
+                                    style="width: 100%"
+                                    @selection-change="handleSelectionChange"
+
+
+                            >
+                                <el-table-column
+                                        prop="articleName"
+                                        label="作品名称"
+                                        sortable
+                                        align="center"
+                                        width="180">
+                                    <template scope="scope">
+                                        <div class="sub-body" @click="readArticles(scope.row)">{{scope.row.articleName}}</div>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column
+                                        prop="authorName"
+                                        label="作者"
+                                        align="center"
+                                        sortable
+                                        width="180">
+                                    <template scope="scope">
+                                        <div class="sub-body" @click="viewAuthor(scope.row)">{{scope.row.authorName}}</div>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column
+                                        prop="date"
+                                        label="发布时间"
+                                        align="center"
+                                        sortable
+                                >
+                                </el-table-column>
+                                <el-table-column
+                                        label="操作"
+                                        align="center"
+                                >
+                                    <el-button size="mini">下载</el-button>
+
+<!--                                    @click="concern"-->
+                                </el-table-column>
+                            </el-table>
+                        </template>
+                    </el-main>
+                </el-container>
+            </el-container>
+        </el-tab-pane>
+        <el-tab-pane label="管理">
+<el-main>
+    上传文章
+    <el-upload
+            class="upload-demo"
+            drag
+            action="#"
+            :multiple="false"
+            :auto-upload="false"
+            :on-change="upload"
+            multiple>
+        <i class="el-icon-upload"></i>
+        <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+        <div class="el-upload__tip" slot="tip">只能上传excel文件，</div>
+    </el-upload>
+    <div id="admin"  style="display:none">
+    <template >
+        <el-table
+                :data="userMessage"
+                style="width: 100%">
+            <el-table-column
+                    label="用户名"
+                    width="180">
+                <template slot-scope="scope">
+                    <el-popover trigger="hover" placement="top">
+                        <p>姓名: {{ scope.row.username }}</p>
+                        <div slot="reference" class="name-wrapper">
+                            <el-tag size="medium">{{ scope.row.username }}</el-tag>
+                        </div>
+                    </el-popover>
+                </template>
+            </el-table-column>
+            <el-table-column
+                    label="用户ID"
+                    width="180">
+                <template slot-scope="scope">
+                    <el-popover trigger="hover" placement="top">
+                        <p>用户ID: {{ scope.row.id }}</p>
+                        <div slot="reference" class="name-wrapper">
+                            <el-tag size="medium">{{ scope.row.id }}</el-tag>
+                        </div>
+                    </el-popover>
+                </template>
+            </el-table-column>
+            <el-table-column label="操作">
+                <template slot-scope="scope">
+                    <el-button
+                            size="mini"
+                            @click="handleEdit(scope.$index, scope.row)" >{{scope.row.admin?'取消系统管理员':'设置系统管理员'}}</el-button>
+                    <el-button
+                            size="mini"
+                            type="wearing"
+                            @click="handleDelete(scope.$index, scope.row)" >{{scope.row.state?'取消封号':'封号'}}</el-button>
+                </template>
+            </el-table-column>
+        </el-table>
+
+    </template>
+
+</div>
+</el-main>
+            <el-footer >
+            <el-button type="primary" plain @click="signOut">退出登录</el-button>
+            </el-footer>
+        </el-tab-pane>
+    </el-tabs>
+</div>
+<script>
+  new Vue({
+      el: "#app",
+      data() {
+          return {
+              shou: false,
+              ins: ['1'],
+              /**
+               *wd
+               */
+              my: {
+                  username: '',
+                  id: '',
+                  signature: '',
+                  admin: ''
+              },
+              myArticle: [{
+                  articleName: '0',
+                  authorName: '1',
+                  date: '2',
+                  article: '3'
+              },],
+              myConcern: [{
+                  articleName: 'xsui',
+                  authorName: 'dsoih',
+                  date: 'skjbc',
+                  article: '3'
+              },],
+
+              myConcerns: [{
+                  username: '0',
+                  id: '1',
+                  signature: '2'
+              },],
+
+              BrowsingRecords: [{
+                  articleName: '0',
+                  authorName: '1',
+                  date: '2',
+                  article: '3'
+              },],
+              activeNames: ['1'],
+              /**
+               * 文章
+               */
+              activeIndex: '3',
+              multipleSelection: [],
+              tableData: [{
+                  articleName: '0',
+                  authorName: '1',
+                  date: '2',
+                  article: '3'
+              }
+              ],
+              dialogFormVisible: false,
+              ne:
+                  {
+                      articleName: '',
+                      Article: '',
+                      authorName: ''
+                  },
+              /**
+               *搜索
+               */
+              SearchData: [{
+                  articleName: '',
+                  authorName: '',
+                  date: '',
+                  article: ''
+              }
+              ],
+              Searchs:'',
+              userMessage: [{
+                  id: '1',
+                  username: '0',
+                  admin:'',
+                  state:''
+              }],
+              currentFile:null,
+                        };
+      },
+
+
+
+      mounted(){
+        var _this=this;
+        window.onload=function () {
+            axios.post("http://localhost:90/myArticle_war/load").then(function (resp) {
+                var m = resp.data;
+                if (m.id != null) {
+                    _this.my.id = m.id;
+                    _this.my.username = m.username;
+                    _this.my.signature = m.signature;
+                    _this.my.admin = m.admin ;
+                } else {
+                    alert("你还没有登录")
+                    window.location.href = 'login.html';
+
+                }
+            })
+        }
+  },
+  methods: {
+      /**
+       *页面一，我的
+       */
+      errorHandler() {
+          return true
+      },
+      handleChange() {
+          var _this = this;
+          if (this.activeNames == 1) {
+              var m = {
+                  articles: 'myArticle'
+              }
+              axios.post("http://localhost:90/myArticle_war/my", m).then(function (resp) {
+                  var ans1 = resp.data;
+                  for (const an of ans1) {
+                      an.date = timestampToTime(an.date)
+                  }
+                  _this.myArticle = ans1;
+
+              })
+
+
+          }
+          if (this.activeNames == 2) {
+              var m1 = {
+                  articles: 'myCollection'
+              }
+              axios.post("http://localhost:90/myArticle_war/my", m1).then(function (resp) {
+                  var ans2 = resp.data;
+                  for (const an of ans2) {
+                      an.date = timestampToTime(an.date)
+                  }
+                  _this.myConcern = ans2;
+              })
+          }
+          if (this.activeNames == 3) {
+              var m2 = {
+                  articles: 'myConcern'
+              }
+              axios.post("http://localhost:90/myArticle_war/my", m2).then(function (resp) {
+                  var ans3 = resp.data;
+                  for (const an of ans3) {
+                      an.date = timestampToTime(an.date)
+                  }
+                  _this.myConcerns = ans3;
+              })
+
+          }
+          if (this.activeNames == 4) {
+
+          }
+          if (this.activeNames == 5) {
+
+          }
+
+      },
+
+      /**
+       *页面2，文章
+       */
+      handleSelect(key, keyPath) {
+          console.log(key, keyPath);
+      },
+      handleSelectionChange(val) {
+          this.multipleSelection = val;
+          console.log(this.multipleSelection)
+      },
+      newArticles() {
+          var _this = this;
+          this.ne.authorName = this.my.username;
+          axios.post("http://localhost:90/myArticle_war/newArticles", this.ne).then(function (resp) {
+              var ans = resp.data;
+              if (ans.value4) {
+                  alert("添加成功");
+                  _this.loadPage();
+              } else {
+                  alert("添加失败");
+              }
+          })
+
+      },
+      loadPage() {
+          var admins=document.getElementById("admin");
+          if(this.my.admin){
+              admins.style.display='';
+          }
+          var _this = this;
+          var a = this.ins;
+          if (a == 1) {
+              axios.post("http://localhost:90/myArticle_war/loadArticles").then(function (resp) {
+                  var ans = resp.data;
+                  for (const an of ans) {
+                      an.date = timestampToTime(an.date)
+                  }
+                  _this.tableData = ans;
+
+              })
+          }
+          if (a == 3) {
+              axios.post("http://localhost:90/myArticle_war/loadAdminPage").then(function (resp) {
+                  var m2=resp.data;
+                  _this.userMessage=m2;
+              })
+
+          }
+      }
+      ,
+
+      /**
+       * 批量删除
+       */
+      BulkDeletion() {
+          if (this.my.admin == true) {
+              if (this.multipleSelection.length !== 0) {
+                  this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+                      confirmButtonText: '确定',
+                      cancelButtonText: '取消',
+                      type: 'warning'
+                  }).then(() => {
+                      /**
+                       * 确认后操作
+                       */
+                      var a = this.multipleSelection;
+                      var b;
+                      axios.post("http://localhost:90/myArticle_war/deletes", a).then(function (resp) {
+                          var b1 = resp.data;
+                          b = b1.b;
+                      })
+                      this.$message({
+                          type: 'success',
+                          message: '删除成功!'
+                      });
+                      this.loadPage();
+                  }).catch(() => {
+                      this.$message({
+                          type: 'info',
+                          message: '已取消删除'
+                      });
+                  });
+              } else {
+                  this.$message(
+                      {
+                          type: 'info',
+                          message: '还没有选中'
+                      }
+                  )
+              }
+          } else {
+              alert("你不是管理员")
+          }
+      }
+      ,
+      /**
+       *搜索
+       */
+      Search() {
+          var _this = this;
+          var a = {
+              Searchs: this.Searchs
+          }
+          // alert(a.Searchs)
+          axios.post("http://localhost:90/myArticle_war/search", a).then(function (resp) {
+              var as = resp.data;
+              for (const an of as) {
+                  an.date = timestampToTime(an.date)
+              }
+              _this.SearchData = as;
+
+          })
+
+      },
+      /**
+       * 取消收藏
+       *
+       */
+      cancelConcern(row) {
+          var c = {
+              articleName: row.articleName,
+              authorName: row.authorName,
+              article: row.article,
+              date: row.date
+          }
+          axios.post("http://localhost:90/myArticle_war/colConcern", c).then(function (resp) {
+              var a = resp.data;
+              if (a.value2) {
+                  alert("取消成功")
+              } else {
+                  alert("取消失败")
+              }
+
+          })
+
+
+      },
+      /**
+       *取消关注
+       */
+      cancelConcerns(row) {
+          var as = {
+              username: row.username,
+              id: row.id,
+              signature: row.signature
+          }
+          axios.post("http://localhost:90/myArticle_war/concerns1", as).then(function (resp) {
+              var ans1 = resp.data;
+              if (ans1.value2) {
+                  alert("取消成功")
+              }
+          })
+      },
+
+      /**
+       *按钮删除
+       */
+      deletion(row) {
+          var rows = {
+              articleName: row.articleName,
+              authorName: row.authorName,
+              article: row.article,
+              date: row.date
+          }
+          axios.post("http://localhost:90/myArticle_war/deletes", rows).then(function (resp) {
+              var a = resp.data;
+              if (a.value2) {
+                  alert("删除成功")
+              } else {
+                  alert("删除失败")
+              }
+
+          })
+          console.log(rows)
+      },
+
+      /**
+       * 上传下载
+       * @param
+       */
+      upload(file){
+          let _this=this;
+          this.courtFile=file;
+          var uploadArticle={
+              articleName:'',
+              authorName:'',
+              Article:'',
+              createTime:'',
+          }
+          const reader = new FileReader();
+          var type = this.courtFile.name.split('.');
+          if (type[type.length - 1] !== 'xlsx' && type[type.length - 1] !== 'xls') {
+              alert('只能选择excel文件导入');
+              return false;
+          }
+          reader.readAsBinaryString(this.courtFile.raw);
+          reader.onload = (e) => {
+              const data = e.target.result;
+              const excel = window.XLS.read(data, {
+                  type: 'binary'
+              })
+              const result = [];
+              for (let i = 0; i < excel.SheetNames.length; i++) {
+                  const excelData = window.XLS.utils.sheet_to_json(excel.Sheets[excel.SheetNames[i]]);
+                  result.push(...excelData)
+              }
+              console.log(result)
+               uploadArticle.articleName = result[0].articleName;
+               uploadArticle.authorName = result[0].authorName;
+              for (let i = 0; i < result.length; i++) {
+                  uploadArticle.Article = uploadArticle.Article + result[i].articleContent
+              }
+              console.log(uploadArticle.articleName)
+              console.log(uploadArticle.authorName)
+              console.log(uploadArticle.articleContent)
+              if(confirm("确定上传吗？")&&this.courtFile!=null){
+                  axios.post("http://localhost:90/myArticle_war/upExcel",uploadArticle).then(function (resp){
+                      if(resp.data.up){
+                          alert("上传成功")
+                      }
+                  })
+              }else {
+
+
+              }
+          }
+          console.log(uploadArticle.articleContent)
+
+
+
+
+
+      },
+
+
+
+
+
+      downloads(row) {
+          var downLoadArticle={
+              articleName:row.articleName,
+              authorName:row.authorName
+          }
+          var downLoadArticles={
+              articleName:'',
+              authorName:'',
+              articleContent:'',
+              createTime:'',
+          }
+
+          axios.post("http://localhost:90/myArticle_war/downloadExcel",downLoadArticle).then(function (resp){
+              var downLoad=resp.data;
+              downLoadArticles.articleName=downLoad.articleName;
+              downLoadArticles.authorName=downLoad.authorName;
+              downLoadArticles.articleContent=downLoad.article;
+              downLoadArticles.createTime=downLoad.date;
+
+
+          })
+          var downloadExcel = [
+              {articleName:downLoadArticles.articleName , authorName: downLoadArticles.authorName, articleContent:downLoadArticles.articleContent }
+          ];
+          var downloadSheet = XLSX.utils.json_to_sheet(downloadExcel);
+          // downloadSheet['!merges'] = [
+          //     // 设置A1-C1的单元格合并
+          //     {s: {r: 0, c: 0}, e: {r: 0, c: 2}}
+          // ];
+          var filename=downLoadArticles.articleName+'.xlsx';
+          console.log(filename)
+          openDownloadDialog(sheet2blob(downloadSheet), filename);
+          // 将一个sheet转成最终的excel文件的blob对象，然后利用URL.createObjectURL下载
+          function sheet2blob(sheet, sheetName) {
+              sheetName = sheetName || 'sheet1';
+              var workbook = {
+                  SheetNames: [sheetName],
+                  Sheets: {}
+              };
+              workbook.Sheets[sheetName] = sheet;
+              // 生成excel的配置项
+              var wopts = {
+                  bookType: 'xlsx', // 要生成的文件类型
+                  bookSST: false, // 是否生成Shared String Table，官方解释是，如果开启生成速度会下降，但在低版本IOS设备上有更好的兼容性
+                  type: 'binary'
+              };
+              var wbout = XLSX.write(workbook, wopts);
+              var blob = new Blob([s2ab(wbout)], {type:"application/octet-stream"});
+              // 字符串转ArrayBuffer
+              function s2ab(s) {
+                  var buf = new ArrayBuffer(s.length);
+                  var view = new Uint8Array(buf);
+                  for (var i=0; i!=s.length; ++i) view[i] = s.charCodeAt(i) & 0xFF;
+                  return buf;
+              }
+              return blob;
+          }
+
+          /**
+           * 通用的打开下载对话框方法，没有测试过具体兼容性
+           * @param url 下载地址，也可以是一个blob对象，必选
+           * @param saveName 保存文件名，可选
+           */
+          function openDownloadDialog(url, saveName)
+          {
+              if(typeof url == 'object' && url instanceof Blob)
+              {
+                  url = URL.createObjectURL(url); // 创建blob地址
+              }
+              var aLink = document.createElement('a');
+              aLink.href = url;
+              aLink.download = saveName || ''; // HTML5新增的属性，指定保存文件名，可以不要后缀，注意，file:///模式下不会生效
+              var event;
+              if(window.MouseEvent) event = new MouseEvent('click');
+              else
+              {
+                  event = document.createEvent('MouseEvents');
+                  event.initMouseEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+              }
+              aLink.dispatchEvent(event);
+          }
+
+          function exportExcel() {
+              var csv = table2csv($('#result table')[0]);
+              var sheet = csv2sheet(csv);
+              var blob = sheet2blob(sheet);
+              openDownloadDialog(blob, '导出.xlsx');
+          }
+
+
+
+      },
+
+      /**
+       * 阅读
+       */
+      readArticles(row) {
+          var a = row
+          axios.post("http://localhost:90/myArticle_war/forwards", a.articleName).then(function (resp) {
+              window.location.href = 'artic.html';
+          })
+      },
+      /**
+       * 查看作者
+       */
+      viewAuthor(row) {
+          var a1 = {
+              authorName: row.authorName
+          }
+          axios.post("http://localhost:90/myArticle_war/setAuthor", a1).then(function (resp) {
+              window.location.href = 'concern.html';
+          })
+      },
+      viewAuthors(row) {
+          var a1 = {
+              authorName: row.username
+          }
+          axios.post("http://localhost:90/myArticle_war/setAuthor", a1).then(function (resp) {
+              window.location.href = 'concern.html';
+          })
+      },
+      run() {
+          alert('kjsdb')
+      },
+
+      handleEdit(index, row) {
+          var _this=this;
+          var a={
+              username:row.username,
+              id:row.id
+          }
+          let set=false;
+          axios.post("http://localhost:90/myArticle_war/setAdmin",a).then(function (resp){
+              var a1=resp.data;
+              set=a1.set;
+          })
+
+      },
+      handleDelete(index, row) {
+          var _this=this;
+          var a2={
+              username:row.username,
+              id:row.id
+          }
+          let set=false;
+      axios.post("http://localhost:90/myArticle_war/banUser",a2).then(function (resp){
+          var a3=resp.data;
+      })
+      },
+      signOut(){
+          axios.post("http://localhost:90/myArticle_war/sign").then(function (resp){
+          })
+          window.location.href="login.html";
+      }
+      }
+  }
+  )
+  function timestampToTime(timestamp) {
+      var date = new Date(timestamp);
+      var Y = date.getFullYear() + '-';
+      var M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1):date.getMonth()+1) + '-';
+      var D = (date.getDate()< 10 ? '0'+date.getDate():date.getDate())+ ' ';
+      var h = (date.getHours() < 10 ? '0'+date.getHours():date.getHours())+ ':';
+      var m = (date.getMinutes() < 10 ? '0'+date.getMinutes():date.getMinutes()) + ':';
+      var s = date.getSeconds() < 10 ? '0'+date.getSeconds():date.getSeconds();
+      return Y+M+D+h+m+s;
+  }
+  // 将一个sheet转成最终的excel文件的blob对象，然后利用URL.createObjectURL下载
+  // function sheet2blob(sheet, sheetName) {
+  //     sheetName = sheetName || 'sheet1';
+  //     var workbook = {
+  //         SheetNames: [sheetName],
+  //         Sheets: {}
+  //     };
+  //     workbook.Sheets[sheetName] = sheet;
+  //     // 生成excel的配置项
+  //     var wopts = {
+  //         bookType: 'xlsx', // 要生成的文件类型
+  //         bookSST: false, // 是否生成Shared String Table，官方解释是，如果开启生成速度会下降，但在低版本IOS设备上有更好的兼容性
+  //         type: 'binary'
+  //     };
+  //     var wbout = XLSX.write(workbook, wopts);
+  //     var blob = new Blob([s2ab(wbout)], {type:"application/octet-stream"});
+  //     // 字符串转ArrayBuffer
+  //     function s2ab(s) {
+  //         var buf = new ArrayBuffer(s.length);
+  //         var view = new Uint8Array(buf);
+  //         for (var i=0; i!=s.length; ++i) view[i] = s.charCodeAt(i) & 0xFF;
+  //         return buf;
+  //     }
+  //     return blob;
+  // }
+  //
+  // /**
+  //  * 通用的打开下载对话框方法，没有测试过具体兼容性
+  //  * @param url 下载地址，也可以是一个blob对象，必选
+  //  * @param saveName 保存文件名，可选
+  //  */
+  // function openDownloadDialog(url, saveName)
+  // {
+  //     if(typeof url == 'object' && url instanceof Blob)
+  //     {
+  //         url = URL.createObjectURL(url); // 创建blob地址
+  //     }
+  //     var aLink = document.createElement('a');
+  //     aLink.href = url;
+  //     aLink.download = saveName || ''; // HTML5新增的属性，指定保存文件名，可以不要后缀，注意，file:///模式下不会生效
+  //     var event;
+  //     if(window.MouseEvent) event = new MouseEvent('click');
+  //     else
+  //     {
+  //         event = document.createEvent('MouseEvents');
+  //         event.initMouseEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+  //     }
+  //     aLink.dispatchEvent(event);
+  // }
+  //
+  // function exportExcel() {
+  //     var csv = table2csv($('#result table')[0]);
+  //     var sheet = csv2sheet(csv);
+  //     var blob = sheet2blob(sheet);
+  //     openDownloadDialog(blob, '导出.xlsx');
+  // }
+var s=0;
+</script>
+</body>
+</html>
