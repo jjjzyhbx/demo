@@ -63,18 +63,31 @@
                 <el-descriptions-item label="用户名" v-model="my.username">{{my.username}}</el-descriptions-item>
                 <el-descriptions-item label="id" v-model="my.id">{{my.id}}</el-descriptions-item>
                 <el-descriptions-item label="邮件" v-model="my.email" >{{my.email}}</el-descriptions-item>
+                <el-descriptions-item label="余额" v-model="my.balance">{{my.balance}}</el-descriptions-item>
                 <el-descriptions-item label="个性签名" v-model="my.signature">
                     <el-tag size="small">{{my.signature}}</el-tag>
                 </el-descriptions-item>
+
+
 <!--                <el-descriptions-item label="注册时间">date</el-descriptions-item>-->
             </el-descriptions>
+            <el-button type="primary" size="small" @click="dialogFormVisible = true">充值</el-button>
+            <el-dialog title="一个充值页" :visible.sync="dialogFormVisible">
+                <el-container>
+                    充值金额:<el-input v-model="my.balance" ></el-input>
+                    充值方式：<el-input v-model="my.signatures" placeholder="请选择你的充值方式"></el-input>
+                    <el-footer align="right">
+                        <el-button type="primary" round @click="Recharge">确认充值</el-button>
+                    </el-footer>
+                </el-container>
+            </el-dialog>
             </template>
 
             <el-collapse v-model="activeNames" @change="handleChange"  accordion>
-                <el-collapse-item title="我的" name="1" >
+                <el-collapse-item title="我的订单" name="1" >
                     <template >
                         <el-table
-                                :data="myArticle"
+                                :data="myDish"
                                 style="width: 100%"
                                 :default-sort = "{prop: 'date', order: 'descending'}"
                                 :data="tableData"
@@ -89,8 +102,8 @@
                                     width="50">
                             </el-table-column>
                             <el-table-column
-                                    prop="articleName"
-                                    label="作品名称"
+                                    prop="name"
+                                    label="食品名称"
                                     sortable
                                     align="center"
                                     width="180">
@@ -101,15 +114,22 @@
                                     align="center"
                                     sortable
                             >
+                                <el-table-column
+                                        prop="price"
+                                        label="价格"
+                                        align="center"
+                                        sortable
+                                >
                             </el-table-column>
                             <el-table-column
                                     label="操作"
                                     align="center"
                             >
                                 <template slot-scope="scope">
-                                    <el-button size="mini" @click.native.prevent="downloads(scope.row)">下载</el-button>
+                                    <el-button size="mini" @click.native.prevent="downloads(scope.row)">支付</el-button>
                                     <el-button size="mini" @click.native.prevent="deletion(scope.row)">删除</el-button>
                                 </template>
+                            </el-table-column>
                             </el-table-column>
                         </el-table>
                     </template>
@@ -513,14 +533,19 @@
                   signature: '',
                   email:'',
                   phone:'',
+                  balance:0,
                   admin: ''
               },
               //这里可以改为我的菜
-              myArticle: [{
-                  articleName: '0',
-                  authorName: '1',
-                  date: '2',
-                  article: '3'
+              // my_Dish: {
+              //     name: '0',
+              //     date: '2021-3-3',
+              //     price: '3'
+              // },
+              myDish: [{
+                  name: '0',
+                  date: '2021-3-3',
+                  price: '3'
               },],
               myConcern: [{
                   articleName: 'xsui',
@@ -649,6 +674,12 @@
                   // 执行其他操作，如显示错误信息或重新尝试操作
               });
      },
+      /**
+       * 充值
+       */
+      Recharge(){
+          alert("充值")
+      },
       handleChange() {
           var _this = this;
           if (this.activeNames == 1) {

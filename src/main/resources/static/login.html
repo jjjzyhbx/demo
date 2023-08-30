@@ -92,7 +92,7 @@
             window.onload=function () {
                 alert("你好")
                 if (_this.user.value1) {
-                    axios.post("http://localhost:90/myArticle_war/re-password").then(function (resp) {
+                    axios.post("http://localhost:90/blog/user/loadLogin").then(function (resp) {
                         var a1 = resp.data;
                         _this.user.id=a1.studentId;
                         _this.user.password=a1.password;
@@ -145,22 +145,24 @@
 
                 if(ans&&ans1){
                     axios.post("http://localhost:90/blog/user/login",users).then(function (resp) {
-
-                        var a=resp.data;
-                        // 返回一个验证，使其登录成功{value3:true or false}
-                        if(a.value3)
-                        {
-                            window.location.href='FirstPage.html'
-                        }
-                        else {
-                            alert("登录失败，你可能没有注册该账户");
-                        }
+                    if (resp.status === 200) {
+                        // 操作成功的逻辑
+                        window.location.href='FirstPage.html'
+                        // 执行其他操作，如跳转页面或刷新数据
+                    } else {
+                        // 操作失败的逻辑
+                        alert("登录失败，你可能没有注册该账户");
+                        // 执行其他操作，如显示错误信息或重新尝试操作
+                    }
+                })
+                    .catch(function (error) {
+                        // 处理请求错误的逻辑
+                        console.log(error);
+                        alert("请求出错");
+                        // 执行其他操作，如显示错误信息或重新尝试操作
                     })
-                }
-                else{
-                    alert("错误")
-                }
-            },
+                    }
+                },
             register(){
                 window.location.href='register.html'
             }

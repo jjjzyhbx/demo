@@ -35,10 +35,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
      */
     @Override
     public boolean login(UserMapper userMapper, User user){
-
         // 从数据库查询所有用户
         List<User> users = userDao.selectAll(userMapper);
-
         // 遍历用户列表,查找匹配的用户
         for(User u : users){
             // 判断用户名和密码是否匹配
@@ -80,7 +78,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
      */
     @Override
     public User rememberPassword(HttpServletRequest request,User user) {
-
         Cookie[] cookies=request.getCookies();
         String id = null;
         String password = null;
@@ -98,11 +95,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 //                    System.out.println("impl"+"id" +"/"+id);
                 }
 //                System.out.println("impl"+"id" +"/"+user.getStudentId());
-                if(id!=null&&id.equals(user.getStudentId())){
-                    user.setPassword(password);
-//                    System.out.println("impl"+":"+user.toString());
-                    user.setRememberPassword(true);
-                }
+//                if(id!=null&&id.equals(user.getStudentId())){
+//                    user.setPassword(password);
+////                    System.out.println("impl"+":"+user.toString());
+//                    user.setRememberPassword(true);
+//                }
+                user.setPassword(password);
             }
         }
      }

@@ -34,28 +34,45 @@ public class UserController {
    private UserMapper userMapper;
    private UserServiceImpl userService=new UserServiceImpl();
 
+//   private void setCookies(String id,String password,Cookie cookie){
+//
+//
+//   }
     /**
      * 用户登录
      * 接受用户名密码，返回判断是否正确
      * 返回格式{value3:true}
+     * @return
      */
     @PostMapping("/login")
-    public String login(@RequestBody String jsonData, HttpServletResponse resp) {
+    public ResponseEntity<String> login(@RequestBody String jsonData, HttpServletResponse resp) {
+        User user1=new User();
         User user = gson.fromJson(jsonData, User.class);
+        System.out.println(user.toString()+"欢迎判断");
         if (userService.login(userMapper, user)) {
-            if(user.isRememberpassword()) {
-                Cookie rememberPasswordCookie = new Cookie("password", user.getPassword());
-                rememberPasswordCookie.setMaxAge(30 * 24 * 60 * 60);
-                // 设置 Cookie 的过期时间为一年
-                resp.addCookie(rememberPasswordCookie);
-            }
+//            if(user.isRememberpassword()) {
+//                user1 = loadMassage();
+//                System.out.println("在线"+user1.toString());
+//                Cookie PasswordCookie = new Cookie("password", user1.getPassword());
+//                PasswordCookie.setMaxAge(30 * 24 * 60 * 60);
+//                // 设置 Cookie 的过期时间为一年
+//                resp.addCookie(PasswordCookie);
+//            }
             // 登录成功时设置 Cookie
-            Cookie idCookie = new Cookie("id", user.getStudentId());
+                user1 = loadMassage();
+                System.out.println("在线"+user1.toString());
+                Cookie PasswordCookie = new Cookie("password", user1.getPassword());
+                PasswordCookie.setMaxAge(30 * 24 * 60 * 60);
+                // 设置 Cookie 的过期时间为一年
+                resp.addCookie(PasswordCookie);
+            Cookie idCookie = new Cookie("id", user1.getStudentId());
             resp.addCookie(idCookie);
 
-            return "{\"value3\":true}";
+//            return "{\"value3\":true}";
+            return ResponseEntity.ok("登录成功");
         } else {
-            return "{\"value3\":false}";
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("登录失败");
+//            return "{\"value3\":false}";
         }
     }
 
@@ -72,7 +89,6 @@ public class UserController {
 //        System.out.println(user.getStudentId()+"???"+jsonData);
          User user1 = userService.rememberPassword(request, user);
 
-        System.out.println(user1.getPassword());
         return gson.toJson(user1);
     }
 
@@ -100,8 +116,17 @@ public class UserController {
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         HttpServletRequest request = attributes.getRequest();
         HttpSession session = request.getSession();
-        val onlineUsers = (User)session.getAttribute("onlineUsers");
+        User onlineUsers = (User)session.getAttribute("onlineUsers");
         return onlineUsers;
+    }
+    @PostMapping("/loadLogin")
+    public String loadLogin(){
+        final val user = loadMassage();
+        if(user!=null){
+            return gson.toJson(user);
+        }else {
+            return "";
+        }
     }
     @PostMapping("/loadMassage")
     public String loadMyMassage(){
