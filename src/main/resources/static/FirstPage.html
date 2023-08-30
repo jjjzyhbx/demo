@@ -52,6 +52,8 @@
                         <el-container>
                             用户名:<el-input v-model="usernames" placeholder="新的用户名" ></el-input>
                             个性签名：<el-input v-model="signatures" placeholder="新的个性签名"></el-input>
+                            个性签名：<el-input v-model="signatures" placeholder="新的个性签名"></el-input>
+                            个性签名：<el-input v-model="signatures" placeholder="新的个性签名"></el-input>
                             <el-footer align="right">
                                 <el-button type="primary" round @click="newUserMessage">确认修改</el-button>
                             </el-footer>
@@ -60,7 +62,7 @@
                 </template>
                 <el-descriptions-item label="用户名" v-model="my.username">{{my.username}}</el-descriptions-item>
                 <el-descriptions-item label="id" v-model="my.id">{{my.id}}</el-descriptions-item>
-                <el-descriptions-item label="居住地"></el-descriptions-item>
+                <el-descriptions-item label="居住地" ></el-descriptions-item>
                 <el-descriptions-item label="个性签名" v-model="my.signature">
                     <el-tag size="small">{{my.signature}}</el-tag>
                 </el-descriptions-item>
@@ -69,7 +71,7 @@
             </template>
 
             <el-collapse v-model="activeNames" @change="handleChange"  accordion>
-                <el-collapse-item title="我的文章" name="1" >
+                <el-collapse-item title="我的" name="1" >
                     <template >
                         <el-table
                                 :data="myArticle"
@@ -264,12 +266,12 @@
             </el-collapse>
 
         </el-tab-pane>
-        <el-tab-pane label="文章"  >
+        <el-tab-pane label="食堂大厅"  >
                         <!--       按钮列表   -->
                         <template>
-                            <el-button type="warning" type="text" @click="BulkDeletion" id="adminDeletion" >批量删除</el-button>
+                            <el-button type="warning" type="text" @click="BulkDeletion" id="adminDeletion" >批量下单</el-button>
                         </template>
-                        <el-button type="primary" @click="dialogFormVisible = true" round >新增</el-button>
+                        <el-button type="primary" @click="dialogFormVisible = true" round >还没想好</el-button>
                         <!--                弹出框-->
                         <el-dialog title="" :visible.sync="dialogFormVisible">
                             <el-container>
@@ -511,6 +513,7 @@
                   signature: '',
                   admin: ''
               },
+              //这里可以改为我的菜
               myArticle: [{
                   articleName: '0',
                   authorName: '1',
@@ -581,14 +584,17 @@
 
       mounted(){
         var _this=this;
+          /**
+           * 加载函数，加载个人信息
+           */
         window.onload=function () {
-            axios.post("http://localhost:90/myArticle_war/load").then(function (resp) {
+            axios.post("http://localhost:90/blog/user/loadMassage").then(function (resp) {
                 var m = resp.data;
                 if (m.id != null) {
-                    _this.my.id = m.id;
+                    _this.my.id = m.studentId;
                     _this.my.username = m.username;
                     _this.my.signature = m.signature;
-                    _this.my.admin = m.admin ;
+                    _this.my.admin = m.type ;
                 } else {
                     alert("你还没有登录")
                     window.location.href = 'login.html';
@@ -604,6 +610,13 @@
       errorHandler() {
           return true
       },
+
+      /**
+       * 修改个人信息
+       */
+     newUserMessage(){
+
+     },
       handleChange() {
           var _this = this;
           if (this.activeNames == 1) {

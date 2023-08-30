@@ -47,7 +47,37 @@ public class User implements Serializable {
     private Date registerTime;
 
     private Date lastLoginTime;
+    private boolean rememberpassword;
+    private String signatures;
 
+    public boolean isRememberpassword() {
+        return rememberpassword;
+    }
+
+    public void setRememberpassword(boolean rememberpassword) {
+        this.rememberpassword = rememberpassword;
+    }
+
+    public String getSignatures() {
+        return signatures;
+    }
+
+    public void setSignatures(String signatures) {
+        this.signatures = signatures;
+    }
+
+    //
+//    public static long getSerialVersionUID() {
+//        return serialVersionUID;
+//    }
+
+    public boolean isRememberPassword() {
+        return rememberpassword;
+    }
+
+    public void setRememberPassword(boolean rememberPassword) {
+        this.rememberpassword = rememberPassword;
+    }
 
     public Integer getId() {
         return id;
@@ -172,6 +202,7 @@ public class User implements Serializable {
         ", balance=" + balance +
         ", registerTime=" + registerTime +
         ", lastLoginTime=" + lastLoginTime +
+        ", rememberPassword=" + rememberpassword +
         "}";
     }
 }

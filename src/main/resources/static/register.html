@@ -31,10 +31,10 @@
 <div class="backgrounds">
     <div id="app">
         <el-form :label-position="labelPosition" label-width="80px"  :model="user" >
-            <el-form-item label="昵称:">
+            <el-form-item label="名字:">
                 <el-input v-model="user.username"></el-input>
             </el-form-item>
-            <el-form-item label="账号:">
+            <el-form-item label="学工号:">
                 <el-input v-model="user.id" id="ids"></el-input>
                 <span id="username_err" class="err_msg" style="display:none" >账号格式错误</span>
             </el-form-item>
@@ -122,10 +122,16 @@
         },
         methods: {
             register() {
+                _this=this
                 if(this.user.password===this.user.passwords){
-                if((ans&&ans1)){
 
-                    axios.post("http://localhost:90/myArticle_war/forwards",this.user).then(function (resp) {
+                    var registerUser={
+                        username:_this.user.username,
+                        studentId:_this.user.id,
+                        password:_this.user.password
+                    }
+                if((ans&&ans1)){
+                    axios.post("http://localhost:90/blog/user/register",registerUser).then(function (resp) {
                         var ans=resp.data;
                         if(ans.value4){
                             alert("注册成功，请登录")

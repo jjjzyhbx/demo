@@ -10,8 +10,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -27,9 +30,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
 //    @Autowired
 //    private UserMapper userMapper;
+
+
+
     /**
      * login
      */
+    @Override
     public boolean login(UserMapper userMapper, User user){
 
         // 从数据库查询所有用户
@@ -59,9 +66,50 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
      * register
      * 注册
      */
+    @Override
     public int register(UserMapper userMapper,User user){
+        user.setRegisterTime(new Date());
+        user.setLastLoginTime(new Date());
+        user.setRealName("student");
+        user.setBalance(new BigDecimal(0));
         return userMapper.insert(user);
     }
 
+    /**
+     * 记住密码
+     * @param request
+     * @param user
+     * @return
+     */
+    @Override
+    public User rememberPassword(HttpServletRequest request,User user) {
+
+        Cookie[] cookies=request.getCookies();
+        String id = null;
+        String password = null;
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals("password")) {
+                    password= cookie.getValue();
+//                    System.out.println("impl"+"id" +"/"+password);
+                }
+            }
+        if(cookies!=null){
+            for (Cookie cookie : cookies) {
+                if(cookie.getName().equals("id")) {
+                    id=cookie.getValue();
+//                    System.out.println("impl"+"id" +"/"+id);
+                }
+//                System.out.println("impl"+"id" +"/"+user.getStudentId());
+                if(id!=null&&id.equals(user.getStudentId())){
+                    user.setPassword(password);
+//                    System.out.println("impl"+":"+user.toString());
+                    user.setRememberPassword(true);
+                }
+            }
+        }
+     }
+        return user;
+    }
 
 }

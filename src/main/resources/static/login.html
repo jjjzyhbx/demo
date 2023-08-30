@@ -90,14 +90,15 @@
         mounted(){
             var _this=this;
             window.onload=function () {
-                if (_this.user.value1) {
-                    axios.post("http://localhost:90/myArticle_war/re-password").then(function (resp) {
-                        var a1 = resp.data;
-                        _this.user.id=a1.id;
-                        _this.user.password=a1.password;
-
-                    })
-                }
+                alert("你好")
+                // if (_this.user.value1) {
+                //     axios.post("http://localhost:90/myArticle_war/re-password").then(function (resp) {
+                //         var a1 = resp.data;
+                //         _this.user.id=a1.id;
+                //         _this.user.password=a1.password;
+                //
+                //     })
+                // }
             }
             var idInput= document.getElementById("ids");
             idInput.onblur=function (){
@@ -139,14 +140,13 @@
                 var users={
                     studentId:this.user.id,
                     password: this.user.password,
-                    type :Number(this.user.value1)
+                    rememberPassword :this.user.value1
                 }
 
                 if(ans&&ans1){
                     axios.post("http://localhost:90/blog/user/login",users).then(function (resp) {
 
                         var a=resp.data;
-                        alert(a.value3)
                         // 返回一个验证，使其登录成功{value3:true or false}
                         if(a.value3)
                         {
@@ -166,12 +166,15 @@
             }
             ,remember(){
                 var _this=this;
+                var studentid={
+                    studentId:this.user.id
+                }
                 var values={
                     value1:this.user.value1
                 }
                 if(this.user.value1)
                 {
-                    axios.post("http://localhost:90/remember").then(function (resp) {
+                    axios.post("http://localhost:90/blog/user/remember",studentid).then(function (resp) {
                         var a1 = resp.data;
                         _this.user.id=a1.studentId;
                         _this.user.password=a1.password;
