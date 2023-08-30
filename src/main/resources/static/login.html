@@ -91,14 +91,14 @@
             var _this=this;
             window.onload=function () {
                 alert("你好")
-                // if (_this.user.value1) {
-                //     axios.post("http://localhost:90/myArticle_war/re-password").then(function (resp) {
-                //         var a1 = resp.data;
-                //         _this.user.id=a1.id;
-                //         _this.user.password=a1.password;
-                //
-                //     })
-                // }
+                if (_this.user.value1) {
+                    axios.post("http://localhost:90/myArticle_war/re-password").then(function (resp) {
+                        var a1 = resp.data;
+                        _this.user.id=a1.studentId;
+                        _this.user.password=a1.password;
+
+                    })
+                }
             }
             var idInput= document.getElementById("ids");
             idInput.onblur=function (){

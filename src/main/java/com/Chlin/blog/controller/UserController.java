@@ -17,7 +17,6 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.util.Map;
 
 /**
  * <p>
@@ -44,9 +43,12 @@ public class UserController {
     public String login(@RequestBody String jsonData, HttpServletResponse resp) {
         User user = gson.fromJson(jsonData, User.class);
         if (userService.login(userMapper, user)) {
-            Cookie rememberPasswordCookie = new Cookie("password", user.getPassword());
-            rememberPasswordCookie.setMaxAge(30 * 24 * 60 * 60); // 设置 Cookie 的过期时间为一年
-            resp.addCookie(rememberPasswordCookie);
+            if(user.isRememberpassword()) {
+                Cookie rememberPasswordCookie = new Cookie("password", user.getPassword());
+                rememberPasswordCookie.setMaxAge(30 * 24 * 60 * 60);
+                // 设置 Cookie 的过期时间为一年
+                resp.addCookie(rememberPasswordCookie);
+            }
             // 登录成功时设置 Cookie
             Cookie idCookie = new Cookie("id", user.getStudentId());
             resp.addCookie(idCookie);
@@ -90,18 +92,46 @@ public class UserController {
         }
     }
 
-
     /**
      * 主页加载个人信息
      * @return
      */
-    @PostMapping("/loadMassage")
-    public String loadMyMassage(){
+    private User loadMassage(){
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         HttpServletRequest request = attributes.getRequest();
         HttpSession session = request.getSession();
-         val onlineUsers = (User)session.getAttribute("onlineUsers");
-        return gson.toJson(onlineUsers);
+        val onlineUsers = (User)session.getAttribute("onlineUsers");
+        return onlineUsers;
+    }
+    @PostMapping("/loadMassage")
+    public String loadMyMassage(){
+        return gson.toJson(loadMassage());
+    }
+
+    /**
+     * 一个更新个人信息的控制插件
+     * @param jsonData
+     * @return
+     */
+    @PostMapping("/newUserMassage")
+    public ResponseEntity<String> upDataMassage(@RequestBody String jsonData) {
+        User user = gson.fromJson(jsonData, User.class);
+        System.out.println("+"+user.toString());
+
+         val user1 = loadMassage();
+         if(user1.getStudentId().equals(user.getStudentId())){
+             user.setId(user1.getId());
+             System.out.println("001"+user1.toString());
+         }
+        // 执行更新操作
+        final val i = userService.upUserMassage(userMapper, user);
+
+        // 根据更新结果返回不同的响应
+        if (i!=0) {
+            return ResponseEntity.ok("修改成功");
+        } else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("修改失败");
+        }
     }
 }
 

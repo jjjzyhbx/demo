@@ -36,9 +36,9 @@ public class User implements Serializable {
 
     private String studentId;
 
-    private String employeeId;
+    private String email;
 
-    private Integer departmentId;
+    private Integer phone;
 
     private Integer grade;
 
@@ -54,9 +54,6 @@ public class User implements Serializable {
         return rememberpassword;
     }
 
-    public void setRememberpassword(boolean rememberpassword) {
-        this.rememberpassword = rememberpassword;
-    }
 
     public String getSignatures() {
         return signatures;
@@ -133,22 +130,20 @@ public class User implements Serializable {
         return this;
     }
 
-    public String getEmployeeId() {
-        return employeeId;
+    public String getEmail() {
+        return email;
     }
 
-    public User setEmployeeId(String employeeId) {
-        this.employeeId = employeeId;
-        return this;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
-    public Integer getDepartmentId() {
-        return departmentId;
+    public Integer getPhone() {
+        return phone;
     }
 
-    public User setDepartmentId(Integer departmentId) {
-        this.departmentId = departmentId;
-        return this;
+    public void setPhone(Integer phone) {
+        this.phone = phone;
     }
 
     public Integer getGrade() {
@@ -196,10 +191,11 @@ public class User implements Serializable {
         ", realName=" + realName +
         ", type=" + type +
         ", studentId=" + studentId +
-        ", employeeId=" + employeeId +
-        ", departmentId=" + departmentId +
+        ", email=" + email +
+        ", phone=" + phone +
         ", grade=" + grade +
         ", balance=" + balance +
+        ", signatures=" + signatures +
         ", registerTime=" + registerTime +
         ", lastLoginTime=" + lastLoginTime +
         ", rememberPassword=" + rememberpassword +

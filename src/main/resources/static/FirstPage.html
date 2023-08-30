@@ -48,12 +48,12 @@
             <el-descriptions class="margin-top" title="" :column="3" >
                 <template slot="extra">
                     <el-button type="primary" size="small" @click="dialogFormVisible = true">编辑</el-button>
-                    <el-dialog title="" :visible.sync="dialogFormVisible">
+                    <el-dialog title="一个修改页" :visible.sync="dialogFormVisible">
                         <el-container>
-                            用户名:<el-input v-model="usernames" placeholder="新的用户名" ></el-input>
-                            个性签名：<el-input v-model="signatures" placeholder="新的个性签名"></el-input>
-                            个性签名：<el-input v-model="signatures" placeholder="新的个性签名"></el-input>
-                            个性签名：<el-input v-model="signatures" placeholder="新的个性签名"></el-input>
+                            用户名:<el-input v-model="my.username" >{{my.username}}</el-input>
+                            个性签名：<el-input v-model="my.signatures" placeholder="新的个性签名"></el-input>
+                            邮箱：<el-input v-model="my.email" placeholder="新的邮箱"></el-input>
+                            电话：<el-input v-model="my.phone" placeholder="新的电话"></el-input>
                             <el-footer align="right">
                                 <el-button type="primary" round @click="newUserMessage">确认修改</el-button>
                             </el-footer>
@@ -62,7 +62,7 @@
                 </template>
                 <el-descriptions-item label="用户名" v-model="my.username">{{my.username}}</el-descriptions-item>
                 <el-descriptions-item label="id" v-model="my.id">{{my.id}}</el-descriptions-item>
-                <el-descriptions-item label="居住地" ></el-descriptions-item>
+                <el-descriptions-item label="邮件" v-model="my.email" >{{my.email}}</el-descriptions-item>
                 <el-descriptions-item label="个性签名" v-model="my.signature">
                     <el-tag size="small">{{my.signature}}</el-tag>
                 </el-descriptions-item>
@@ -505,12 +505,14 @@
               shou: false,
               ins: ['1'],
               /**
-               *wd
+               *个人信息页面
                */
               my: {
                   username: '',
                   id: '',
                   signature: '',
+                  email:'',
+                  phone:'',
                   admin: ''
               },
               //这里可以改为我的菜
@@ -578,6 +580,7 @@
               }],
               currentFile:null,
                         };
+
       },
 
 
@@ -593,7 +596,9 @@
                 if (m.id != null) {
                     _this.my.id = m.studentId;
                     _this.my.username = m.username;
-                    _this.my.signature = m.signature;
+                    _this.my.signature = m.signatures;
+                    _this.my.email=m.email
+                    _this.my.phone=m.phone
                     _this.my.admin = m.type ;
                 } else {
                     alert("你还没有登录")
@@ -615,7 +620,34 @@
        * 修改个人信息
        */
      newUserMessage(){
+          _this=this;
+         var mys={
+             username: _this.my.username,
+             studentId: _this.my.id,
+             signatures: _this.my.signature,
+             email:_this.my.email,
+             phone:_this.my.phone,
+             type: _this.my.admin
+         }
 
+          axios.post("http://localhost:90/blog/user/newUserMassage", mys)
+              .then(function (resp) {
+                  if (resp.status === 200) {
+                      // 操作成功的逻辑
+                      alert("修改成功");
+                      // 执行其他操作，如跳转页面或刷新数据
+                  } else {
+                      // 操作失败的逻辑
+                      alert("修改失败");
+                      // 执行其他操作，如显示错误信息或重新尝试操作
+                  }
+              })
+              .catch(function (error) {
+                  // 处理请求错误的逻辑
+                  console.log(error);
+                  alert("请求出错");
+                  // 执行其他操作，如显示错误信息或重新尝试操作
+              });
      },
       handleChange() {
           var _this = this;

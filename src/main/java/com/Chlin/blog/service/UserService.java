@@ -18,4 +18,5 @@ public interface UserService extends IService<User> {
     public boolean login(UserMapper userMapper, User user);
     public int register(UserMapper userMapper,User user);
     public User rememberPassword(HttpServletRequest request,User user);
+    public int upUserMassage(UserMapper userMapper,User user);
 }

@@ -1,5 +1,6 @@
 package com.Chlin.blog.service.impl;
 
+import com.Chlin.blog.dao.UserDao;
 import com.Chlin.blog.entity.User;
 import com.Chlin.blog.mapper.UserMapper;
 import com.Chlin.blog.service.UserService;
@@ -28,11 +29,7 @@ import java.util.List;
 @Service
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
 
-//    @Autowired
-//    private UserMapper userMapper;
-
-
-
+    private UserDao userDao=UserDao.getInstance();
     /**
      * login
      */
@@ -40,7 +37,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public boolean login(UserMapper userMapper, User user){
 
         // 从数据库查询所有用户
-        List<User> users = userMapper.selectList(null);
+        List<User> users = userDao.selectAll(userMapper);
 
         // 遍历用户列表,查找匹配的用户
         for(User u : users){
@@ -72,7 +69,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         user.setLastLoginTime(new Date());
         user.setRealName("student");
         user.setBalance(new BigDecimal(0));
-        return userMapper.insert(user);
+        return userDao.insertUserData(userMapper,user);
     }
 
     /**
@@ -112,4 +109,18 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         return user;
     }
 
+
+    /**
+     * 更新个人信息
+     * @param userMapper
+     * @param user
+     * @return
+     */
+    @Override
+    public int upUserMassage(UserMapper userMapper, User user) {
+
+        //更新后台时间
+        user.setLastLoginTime(new Date());
+        return userDao.upDataUserMassageById(userMapper,user);
+    }
 }
