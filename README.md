@@ -3,10 +3,10 @@
 **基础入门配置**
 **1.**
 #配置mysql，网络上找mysql入门，配置相应路径，创建数据库名：meal_card_management
-sql语句如下
+# sql语句如下
 cerate database meal_card_management;
 use  meal_card_management
-创建表
+# 创建表
 CREATE TABLE `user` (
                         `id` int PRIMARY KEY AUTO_INCREMENT,
                         `username` varchar(50) NOT NULL,
@@ -80,9 +80,9 @@ ALTER TABLE user ADD signatures varchar(256);
 
 ALTER TABLE user CHANGE employee_id email varchar(20);
 
-**meaven**
+# **meaven**
 配置meaven，然后加载依赖
-**配置自己本地环境**
+# **配置自己本地环境**
 application.yaml 中，只需要将
 spring.datasource.username: root（自己数据库用户名）
 spring.datasource.password: 2605274496（自己数据库密码）
