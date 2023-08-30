@@ -1,5 +1,5 @@
-# demo
-一个课设
+#mysql,
+****
 **基础入门配置**
 **1.**
 #配置mysql，网络上找mysql入门，配置相应路径，创建数据库名：meal_card_management
@@ -21,12 +21,12 @@ CREATE TABLE `user` (
                         `register_time` datetime NOT NULL,
                         `last_login_time` datetime
 );
-
+# 
 CREATE TABLE `department` (
                               `id` int PRIMARY KEY AUTO_INCREMENT,
                               `name` varchar(50) NOT NULL
 );
-
+# 
 CREATE TABLE `dish` (
                         `id` int PRIMARY KEY AUTO_INCREMENT,
                         `name` varchar(50) NOT NULL,

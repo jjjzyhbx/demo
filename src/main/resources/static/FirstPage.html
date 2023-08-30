@@ -64,15 +64,15 @@
                 <el-descriptions-item label="id" v-model="my.id">{{my.id}}</el-descriptions-item>
                 <el-descriptions-item label="邮件" v-model="my.email" >{{my.email}}</el-descriptions-item>
                 <el-descriptions-item label="余额" v-model="my.balance">{{my.balance}}</el-descriptions-item>
-                <el-descriptions-item label="个性签名" v-model="my.signature">
-                    <el-tag size="small">{{my.signature}}</el-tag>
+                <el-descriptions-item label="个性签名" v-model="my.signatures">
+                    <el-tag size="small">{{my.signatures}}</el-tag>
                 </el-descriptions-item>
 
 
 <!--                <el-descriptions-item label="注册时间">date</el-descriptions-item>-->
             </el-descriptions>
-            <el-button type="primary" size="small" @click="dialogFormVisible = true">充值</el-button>
-            <el-dialog title="一个充值页" :visible.sync="dialogFormVisible">
+            <el-button type="primary" size="small" @click="dialogsFormVisible=true">充值</el-button>
+            <el-dialog title="一个充值页" v-model="dialogsFormVisible" :visible.sync="dialogs">
                 <el-container>
                     充值金额:<el-input v-model="my.balance" ></el-input>
                     充值方式：<el-input v-model="my.signatures" placeholder="请选择你的充值方式"></el-input>
@@ -524,18 +524,20 @@
           return {
               shou: false,
               ins: ['1'],
+              dialogs:false,
               /**
                *个人信息页面
                */
               my: {
                   username: '',
                   id: '',
-                  signature: '',
+                  signatures: '',
                   email:'',
                   phone:'',
                   balance:0,
                   admin: ''
               },
+              alldata:{},
               //这里可以改为我的菜
               // my_Dish: {
               //     name: '0',
@@ -621,10 +623,11 @@
                 if (m.id != null) {
                     _this.my.id = m.studentId;
                     _this.my.username = m.username;
-                    _this.my.signature = m.signatures;
+                    _this.my.signatures = m.signatures;
                     _this.my.email=m.email
                     _this.my.phone=m.phone
                     _this.my.admin = m.type ;
+                    _this.alldata=m;
                 } else {
                     alert("你还没有登录")
                     window.location.href = 'login.html';
@@ -640,20 +643,22 @@
       errorHandler() {
           return true
       },
-
+      FormVisible(){
+          dialogs=true
+      },
       /**
        * 修改个人信息
        */
      newUserMessage(){
           _this=this;
-         var mys={
-             username: _this.my.username,
-             studentId: _this.my.id,
-             signatures: _this.my.signature,
-             email:_this.my.email,
-             phone:_this.my.phone,
-             type: _this.my.admin
-         }
+
+         var mys=_this.alldata;
+             mys.username= _this.my.username,
+             mys.signatures= _this.my.signatures,
+            mys. email=_this.my.email,
+             mys.phone=_this.my.phone,
+
+
 
           axios.post("http://localhost:90/blog/user/newUserMassage", mys)
               .then(function (resp) {

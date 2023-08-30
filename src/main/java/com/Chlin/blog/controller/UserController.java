@@ -142,12 +142,6 @@ public class UserController {
     public ResponseEntity<String> upDataMassage(@RequestBody String jsonData) {
         User user = gson.fromJson(jsonData, User.class);
         System.out.println("+"+user.toString());
-
-         val user1 = loadMassage();
-         if(user1.getStudentId().equals(user.getStudentId())){
-             user.setId(user1.getId());
-             System.out.println("001"+user1.toString());
-         }
         // 执行更新操作
         final val i = userService.upUserMassage(userMapper, user);
 

@@ -1,5 +1,6 @@
 package com.Chlin.blog.service.impl;
 
+import com.Chlin.blog.Util.ServiceUtils;
 import com.Chlin.blog.dao.UserDao;
 import com.Chlin.blog.entity.User;
 import com.Chlin.blog.mapper.UserMapper;
@@ -116,9 +117,24 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
      */
     @Override
     public int upUserMassage(UserMapper userMapper, User user) {
-
+        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        HttpServletRequest request = attributes.getRequest();
+        HttpSession session = request.getSession();
         //更新后台时间
         user.setLastLoginTime(new Date());
+        // 存储登录用户信息到会话
+         User onlineUsers = (User)session.getAttribute("onlineUsers");
+        /**
+         * 我打对比onlineUsers跟user不同的地方，然后将user与onlineUsers不同的地方更新到onlineUsers中，然后写入ssession，怎么办
+         */
+
+//        final val instance = ServiceUtils.getInstance();
+        try {
+            user=(User)ServiceUtils.copyChangedFields(onlineUsers,user);
+            session.setAttribute("onlineUsers",user);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
         return userDao.upDataUserMassageById(userMapper,user);
     }
 }
