@@ -109,13 +109,13 @@
                                     width="180">
                             </el-table-column>
                             <el-table-column
-                                    prop="date"
-                                    label="发布时间"
+                                    prop="price"
+                                    label="上次发布时间"
                                     align="center"
                                     sortable
                             >
                                 <el-table-column
-                                        prop="price"
+                                        prop="updateTime"
                                         label="价格"
                                         align="center"
                                         sortable
@@ -126,7 +126,7 @@
                                     align="center"
                             >
                                 <template slot-scope="scope">
-                                    <el-button size="mini" @click.native.prevent="downloads(scope.row)">支付</el-button>
+                                    <el-button size="mini" @click.native.prevent="payment(scope.row)">支付</el-button>
                                     <el-button size="mini" @click.native.prevent="deletion(scope.row)">删除</el-button>
                                 </template>
                             </el-table-column>
@@ -137,7 +137,7 @@
                 <el-collapse-item title="收藏" name="2">
                     <template >
                         <el-table
-                                :data="myConcern"
+                                :data="myCollection"
                                 style="width: 100%"
                                 :default-sort = "{prop: 'date', order: 'descending'}"
                                 :data="tableData"
@@ -151,8 +151,8 @@
                                     width="50">
                             </el-table-column>
                             <el-table-column
-                                    prop="articleName"
-                                    label="作品名称"
+                                    prop="name"
+                                    label="菜名"
                                     sortable
                                     align="center"
                                     width="180">
@@ -161,14 +161,14 @@
                                 </template>
                             </el-table-column>
                             <el-table-column
-                                    prop="date"
+                                    prop="price"
                                     label="发布时间"
                                     align="center"
                                     sortable
                             >
                             </el-table-column>
                             <el-table-column
-                                    prop="authorName"
+                                    prop="updateTime"
                                     label="作者"
                                     align="center"
                                     sortable
@@ -183,7 +183,7 @@
                                     align="center"
                             >
                                 <template slot-scope="scope">
-                                    <el-button size="mini" @click.native.prevent="downloads(scope.row)">下载</el-button>
+                                    <el-button size="mini" @click.native.prevent="buyAgain(scope.row)">再次购买</el-button>
                                     <el-button size="mini" @click.native.prevent="cancelConcern(scope.row)">取消收藏</el-button>
                                 </template>
                             </el-table-column>
@@ -394,7 +394,7 @@
                                         align="center"
                                 >
                                     <template slot-scope="scope">
-                                        <el-button size="mini" @click.native.prevent="downloads(scope.row)">加入购物车</el-button>
+                                        <el-button size="mini" @click.native.prevent="addShopping(scope.row)">加入购物车</el-button>
                                         <el-button size="mini" @click.native.prevent="adminDelete(scope.row)">删除</el-button>
                                     </template>
 <!--                                    <el-button size="mini">下载</el-button>-->
@@ -481,7 +481,7 @@
                                         label="操作"
                                         align="center"
                                 >
-                                    <el-button size="mini">加入购物车</el-button>
+                                    <el-button size="mini" >加入购物车</el-button>
                                     <el-button size="mini">删除</el-button>
 
 <!--                                    @click="concern"-->
@@ -589,20 +589,23 @@
               // },
               myDish: [{
                   name: '0',
-                  date: '2021-3-3',
+                  updateTime: '2021-3-3',
                   price: '3'
               },],
-              myConcern: [{
-                  articleName: 'xsui',
-                  authorName: 'dsoih',
-                  date: 'skjbc',
-                  article: '3'
+              myCollection: [{
+                  name: '0',
+                  price: '1',
+                  updateTime: '2',
+                  monthlySales: '3',
+                  inventory:''
               },],
 
-              myConcerns: [{
-                  username: '0',
-                  id: '1',
-                  signature: '2'
+              myConcern: [{
+                  name: '0',
+                  price: '1',
+                  updateTime: '2',
+                  monthlySales: '3',
+                  inventory:''
               },],
 
               BrowsingRecords: [{
@@ -627,7 +630,7 @@
               tableData: [{
                   name: '0',
                   price: '1',
-                  updataTime: '2',
+                  updateTime: '2',
                   monthlySales: '3',
                   inventory:''
               }
@@ -636,7 +639,7 @@
               dish:{
                   name: '0',
                   price: '1',
-                  updataTime: '2',
+                  updateTime: '2',
                   monthlySales: '3',
                   inventory:''
               },
@@ -652,7 +655,7 @@
               SearchData: [{
                   name: '0',
                   price: '1',
-                  updataTime: '2',
+                  updateTime: '2',
                   monthlySales: '3',
                   inventory:''
               }
@@ -885,7 +888,7 @@
               axios.post("http://localhost:90/blog/dish/loadDish").then(function (resp) {
                   var ans = resp.data;
                   for (const an of ans) {
-                      an.updataTime = timestampToTime(an.updataTime)
+                      an.updateTime = timestampToTime(an.updateTime)
                   }
                   _this.tableData = ans;
 
@@ -916,10 +919,10 @@
                        * 确认后操作
                        */
                       var a = this.multipleSelection;
-                      var b;
-                      axios.post("http://localhost:90/myArticle_war/deletes", a).then(function (resp) {
-                          var b1 = resp.data;
-                          b = b1.b;
+                      // var b;
+                      axios.post("http://localhost:90/blog/adminDeletes", a).then(function (resp) {
+                          // var b1 = resp.data;
+                          // b = b1.b;
                       })
                       this.$message({
                           type: 'success',
@@ -1007,23 +1010,33 @@
       /**
        *按钮删除
        */
-      deletion(row) {
+      adminDelete(row) {
           var rows = {
-              articleName: row.articleName,
-              authorName: row.authorName,
-              article: row.article,
-              date: row.date
+              name: row.name,
+              price: row.price,
+              updateTime: row.updateTime,
+              monthlySales: row.monthlySales,
+              inventory:row.inventory
           }
-          axios.post("http://localhost:90/myArticle_war/deletes", rows).then(function (resp) {
-              var a = resp.data;
-              if (a.value2) {
-                  alert("删除成功")
-              } else {
-                  alert("删除失败")
-              }
+          axios.post("http://localhost:90/blog/user/adminDelete", rows).then(function (resp) {
+                  if (resp.status === 200) {
+                      // 操作成功的逻辑
+                      alert("充值成功");
+                      // 执行其他操作，如跳转页面或刷新数据
+                  } else {
+                      // 操作失败的逻辑
+                      alert("充值失败");
+                      // 执行其他操作，如显示错误信息或重新尝试操作
+                      console.log(rows)
+                  }
+              })
+              .catch(function (error) {
+                  // 处理请求错误的逻辑
+                  console.log(error);
+                  alert("请求出错");
+                  // 执行其他操作，如显示错误信息或重新尝试操作
+              })
 
-          })
-          console.log(rows)
       },
 
       /**
@@ -1088,98 +1101,126 @@
 
 
 
-      downloads(row) {
-          var downLoadArticle={
-              articleName:row.articleName,
-              authorName:row.authorName
+      addShopping(row){
+          alert("加入购物车")
+          thisDish={
+              name: row.name,
+              price: row.price,
+              updateTime: row.updateTime,
+              monthlySales: row.monthlySales,
+              inventory:row.inventory
           }
-          var downLoadArticles={
-              articleName:'',
-              authorName:'',
-              articleContent:'',
-              createTime:'',
-          }
-
-          axios.post("http://localhost:90/myArticle_war/downloadExcel",downLoadArticle).then(function (resp){
-              var downLoad=resp.data;
-              downLoadArticles.articleName=downLoad.articleName;
-              downLoadArticles.authorName=downLoad.authorName;
-              downLoadArticles.articleContent=downLoad.article;
-              downLoadArticles.createTime=downLoad.date;
-
-
+          axios.post("http://localhost:90/blog/order/addShopping", thisDish).then(function (resp) {
+              if (resp.status === 200) {
+                  // 操作成功的逻辑
+                  alert("加入成功");
+                  // 执行其他操作，如跳转页面或刷新数据
+              } else {
+                  // 操作失败的逻辑
+                  alert("加入失败");
+                  // 执行其他操作，如显示错误信息或重新尝试操作
+              }
           })
-          var downloadExcel = [
-              {articleName:downLoadArticles.articleName , authorName: downLoadArticles.authorName, articleContent:downLoadArticles.articleContent }
-          ];
-          var downloadSheet = XLSX.utils.json_to_sheet(downloadExcel);
-          // downloadSheet['!merges'] = [
-          //     // 设置A1-C1的单元格合并
-          //     {s: {r: 0, c: 0}, e: {r: 0, c: 2}}
-          // ];
-          var filename=downLoadArticles.articleName+'.xlsx';
-          console.log(filename)
-          openDownloadDialog(sheet2blob(downloadSheet), filename);
-          // 将一个sheet转成最终的excel文件的blob对象，然后利用URL.createObjectURL下载
-          function sheet2blob(sheet, sheetName) {
-              sheetName = sheetName || 'sheet1';
-              var workbook = {
-                  SheetNames: [sheetName],
-                  Sheets: {}
-              };
-              workbook.Sheets[sheetName] = sheet;
-              // 生成excel的配置项
-              var wopts = {
-                  bookType: 'xlsx', // 要生成的文件类型
-                  bookSST: false, // 是否生成Shared String Table，官方解释是，如果开启生成速度会下降，但在低版本IOS设备上有更好的兼容性
-                  type: 'binary'
-              };
-              var wbout = XLSX.write(workbook, wopts);
-              var blob = new Blob([s2ab(wbout)], {type:"application/octet-stream"});
-              // 字符串转ArrayBuffer
-              function s2ab(s) {
-                  var buf = new ArrayBuffer(s.length);
-                  var view = new Uint8Array(buf);
-                  for (var i=0; i!=s.length; ++i) view[i] = s.charCodeAt(i) & 0xFF;
-                  return buf;
-              }
-              return blob;
-          }
-
-          /**
-           * 通用的打开下载对话框方法，没有测试过具体兼容性
-           * @param url 下载地址，也可以是一个blob对象，必选
-           * @param saveName 保存文件名，可选
-           */
-          function openDownloadDialog(url, saveName)
-          {
-              if(typeof url == 'object' && url instanceof Blob)
-              {
-                  url = URL.createObjectURL(url); // 创建blob地址
-              }
-              var aLink = document.createElement('a');
-              aLink.href = url;
-              aLink.download = saveName || ''; // HTML5新增的属性，指定保存文件名，可以不要后缀，注意，file:///模式下不会生效
-              var event;
-              if(window.MouseEvent) event = new MouseEvent('click');
-              else
-              {
-                  event = document.createEvent('MouseEvents');
-                  event.initMouseEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
-              }
-              aLink.dispatchEvent(event);
-          }
-
-          function exportExcel() {
-              var csv = table2csv($('#result table')[0]);
-              var sheet = csv2sheet(csv);
-              var blob = sheet2blob(sheet);
-              openDownloadDialog(blob, '导出.xlsx');
-          }
-
-
+              .catch(function (error) {
+                  // 处理请求错误的逻辑
+                  console.log(error);
+                  alert("请求出错");
+                  // 执行其他操作，如显示错误信息或重新尝试操作
+              })
 
       },
+      // downloads(row) {
+      //     var downLoadArticle={
+      //         articleName:row.articleName,
+      //         authorName:row.authorName
+      //     }
+      //     var downLoadArticles={
+      //         articleName:'',
+      //         authorName:'',
+      //         articleContent:'',
+      //         createTime:'',
+      //     }
+      //
+      //     axios.post("http://localhost:90/myArticle_war/downloadExcel",downLoadArticle).then(function (resp){
+      //         var downLoad=resp.data;
+      //         downLoadArticles.articleName=downLoad.articleName;
+      //         downLoadArticles.authorName=downLoad.authorName;
+      //         downLoadArticles.articleContent=downLoad.article;
+      //         downLoadArticles.createTime=downLoad.date;
+      //
+      //
+      //     })
+      //     var downloadExcel = [
+      //         {articleName:downLoadArticles.articleName , authorName: downLoadArticles.authorName, articleContent:downLoadArticles.articleContent }
+      //     ];
+      //     var downloadSheet = XLSX.utils.json_to_sheet(downloadExcel);
+      //     // downloadSheet['!merges'] = [
+      //     //     // 设置A1-C1的单元格合并
+      //     //     {s: {r: 0, c: 0}, e: {r: 0, c: 2}}
+      //     // ];
+      //     var filename=downLoadArticles.articleName+'.xlsx';
+      //     console.log(filename)
+      //     openDownloadDialog(sheet2blob(downloadSheet), filename);
+      //     // 将一个sheet转成最终的excel文件的blob对象，然后利用URL.createObjectURL下载
+      //     function sheet2blob(sheet, sheetName) {
+      //         sheetName = sheetName || 'sheet1';
+      //         var workbook = {
+      //             SheetNames: [sheetName],
+      //             Sheets: {}
+      //         };
+      //         workbook.Sheets[sheetName] = sheet;
+      //         // 生成excel的配置项
+      //         var wopts = {
+      //             bookType: 'xlsx', // 要生成的文件类型
+      //             bookSST: false, // 是否生成Shared String Table，官方解释是，如果开启生成速度会下降，但在低版本IOS设备上有更好的兼容性
+      //             type: 'binary'
+      //         };
+      //         var wbout = XLSX.write(workbook, wopts);
+      //         var blob = new Blob([s2ab(wbout)], {type:"application/octet-stream"});
+      //         // 字符串转ArrayBuffer
+      //         function s2ab(s) {
+      //             var buf = new ArrayBuffer(s.length);
+      //             var view = new Uint8Array(buf);
+      //             for (var i=0; i!=s.length; ++i) view[i] = s.charCodeAt(i) & 0xFF;
+      //             return buf;
+      //         }
+      //         return blob;
+      //     }
+      //
+      //     /**
+      //      * 通用的打开下载对话框方法，没有测试过具体兼容性
+      //      * @param url 下载地址，也可以是一个blob对象，必选
+      //      * @param saveName 保存文件名，可选
+      //      */
+      //     function openDownloadDialog(url, saveName)
+      //     {
+      //         if(typeof url == 'object' && url instanceof Blob)
+      //         {
+      //             url = URL.createObjectURL(url); // 创建blob地址
+      //         }
+      //         var aLink = document.createElement('a');
+      //         aLink.href = url;
+      //         aLink.download = saveName || ''; // HTML5新增的属性，指定保存文件名，可以不要后缀，注意，file:///模式下不会生效
+      //         var event;
+      //         if(window.MouseEvent) event = new MouseEvent('click');
+      //         else
+      //         {
+      //             event = document.createEvent('MouseEvents');
+      //             event.initMouseEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+      //         }
+      //         aLink.dispatchEvent(event);
+      //     }
+      //
+      //     function exportExcel() {
+      //         var csv = table2csv($('#result table')[0]);
+      //         var sheet = csv2sheet(csv);
+      //         var blob = sheet2blob(sheet);
+      //         openDownloadDialog(blob, '导出.xlsx');
+      //     }
+      //
+      //
+      //
+      // },
 
       /**
        * 阅读
