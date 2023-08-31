@@ -152,5 +152,24 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("修改失败");
         }
     }
+
+    /**
+     * 充值
+     * @param jsonData
+     * @return
+     */
+    @PostMapping("/recharge")
+    public ResponseEntity<String> RechargeMoney(@RequestBody String jsonData){
+        User user = gson.fromJson(jsonData, User.class);
+        System.out.println("+"+user.toString());
+        // 执行更新操作
+        final val i = userService.upUserBalance(userMapper, user);
+        // 根据更新结果返回不同的响应
+        if (i!=0) {
+            return ResponseEntity.ok("修改成功");
+        } else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("修改失败");
+        }
+    }
 }
 

@@ -137,4 +137,24 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         }
         return userDao.upDataUserMassageById(userMapper,user);
     }
+
+    public int upUserBalance(UserMapper userMapper, User user) {
+        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        HttpServletRequest request = attributes.getRequest();
+        HttpSession session = request.getSession();
+        //更新后台时间
+        user.setLastLoginTime(new Date());
+        // 存储登录用户信息到会话
+        User onlineUsers = (User)session.getAttribute("onlineUsers");
+        /**
+         * 我打对比onlineUsers跟user不同的地方，然后将user与onlineUsers不同的地方更新到onlineUsers中，然后写入ssession，怎么办
+         */
+        BigDecimal sum = onlineUsers.getBalance().add(user.getBalance());
+//        final val instance = ServiceUtils.getInstance();
+       onlineUsers.setBalance(sum);
+        System.out.println("修改后的余额"+onlineUsers.toString());
+        return userDao.upDataUserMassageById(userMapper,user);
+
+
+    }
 }

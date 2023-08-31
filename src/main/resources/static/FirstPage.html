@@ -47,8 +47,8 @@
 
             <el-descriptions class="margin-top" title="" :column="3" >
                 <template slot="extra">
-                    <el-button type="primary" size="small" @click="dialogFormVisible = true">编辑</el-button>
-                    <el-dialog title="一个修改页" :visible.sync="dialogFormVisible">
+                    <el-button type="primary" size="small" @click="openDialog1">编辑</el-button>
+                    <el-dialog title="一个修改页" v-model="dialog1Visible" :visible.sync="dialog1Visible">
                         <el-container>
                             用户名:<el-input v-model="my.username" >{{my.username}}</el-input>
                             个性签名：<el-input v-model="my.signatures" placeholder="新的个性签名"></el-input>
@@ -71,11 +71,11 @@
 
 <!--                <el-descriptions-item label="注册时间">date</el-descriptions-item>-->
             </el-descriptions>
-            <el-button type="primary" size="small" @click="dialogsFormVisible=true">充值</el-button>
-            <el-dialog title="一个充值页" v-model="dialogsFormVisible" :visible.sync="dialogs">
+            <el-button type="primary" size="small" @click="openDialog2()">充值</el-button>
+            <el-dialog title="一个充值页" v-model="dialog2Visible" :visible.sync="dialog2Visible">
                 <el-container>
                     充值金额:<el-input v-model="my.balance" ></el-input>
-                    充值方式：<el-input v-model="my.signatures" placeholder="请选择你的充值方式"></el-input>
+                    充值方式：<el-input  placeholder="请选择你的充值方式"></el-input>
                     <el-footer align="right">
                         <el-button type="primary" round @click="Recharge">确认充值</el-button>
                     </el-footer>
@@ -524,7 +524,8 @@
           return {
               shou: false,
               ins: ['1'],
-              dialogs:false,
+              dialog1Visible:false,
+              dialog2Visible:false,
               /**
                *个人信息页面
                */
@@ -534,7 +535,7 @@
                   signatures: '',
                   email:'',
                   phone:'',
-                  balance:0,
+                  balance:'',
                   admin: ''
               },
               alldata:{},
@@ -627,6 +628,7 @@
                     _this.my.email=m.email
                     _this.my.phone=m.phone
                     _this.my.admin = m.type ;
+                    _this.my.balance=m.balance;
                     _this.alldata=m;
                 } else {
                     alert("你还没有登录")
@@ -643,8 +645,17 @@
       errorHandler() {
           return true
       },
-      FormVisible(){
-          dialogs=true
+      openDialog1() {
+          // if (this.dialog2Visible) {
+          //     this.dialog2Visible = false;
+          // }
+          this.dialog1Visible = true;
+      },
+      openDialog2() {
+          // if (!this.dialog1Visible) {
+          //     this.dialog1Visible = false;
+          // }
+          this.dialog2Visible = true;
       },
       /**
        * 修改个人信息
@@ -657,7 +668,6 @@
              mys.signatures= _this.my.signatures,
             mys. email=_this.my.email,
              mys.phone=_this.my.phone,
-
 
 
           axios.post("http://localhost:90/blog/user/newUserMassage", mys)
@@ -684,6 +694,28 @@
        */
       Recharge(){
           alert("充值")
+          _this=this;
+          var alls=_this.alldata;
+          var a=_this.my.balance
+          alls.balance=a
+              axios.post("http://localhost:90/blog/user/recharge", alls)
+                  .then(function (resp) {
+                      if (resp.status === 200) {
+                          // 操作成功的逻辑
+                          alert("充值成功");
+                          // 执行其他操作，如跳转页面或刷新数据
+                      } else {
+                          // 操作失败的逻辑
+                          alert("充值失败");
+                          // 执行其他操作，如显示错误信息或重新尝试操作
+                      }
+                  })
+                  .catch(function (error) {
+                      // 处理请求错误的逻辑
+                      console.log(error);
+                      alert("请求出错");
+                      // 执行其他操作，如显示错误信息或重新尝试操作
+                  });
       },
       handleChange() {
           var _this = this;
