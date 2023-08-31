@@ -39,22 +39,29 @@ public class test {
         user.setLastLoginTime(new Date());
         System.out.println(userService.register(userMapper,user));
     }
-//    @Test
-//    public void testLogin(){
-//        userService.login(userMapper);
-//    }
     @Autowired
-    DishMapper dishMapper;
-    private DishServiceImpl dishService=new DishServiceImpl();
+    public DishServiceImpl dishService;
     @Test
     public void testDishINsert(){
-        dishService.setDishMapper(dishMapper);
         Dish dish=new Dish();
-        dish.setId(1);
         dish.setName("酸汤鱼");
         dish.setInventory(10);
         dish.setPrice(new BigDecimal(10));
-        dishService.insertNewDish(dish);
+        dishService.save(dish);
+
+    }
+    @Test
+    public void testList(){
+        Dish dish=new Dish();
+        dish.setName("酸汤鱼");
+        dish.setPrice(new BigDecimal(16));
+//        dishService.listByEntity(dish).forEach(System.out::println);
+        dish.setId(1);
+        dishService.updateById(dish);
+    }
+
+    @Test
+    public void testSele(){
 
     }
 }

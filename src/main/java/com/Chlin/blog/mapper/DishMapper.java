@@ -2,6 +2,7 @@ package com.Chlin.blog.mapper;
 
 import com.Chlin.blog.entity.Dish;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Repository;
  * @since 2023-08-29
  */
 @Repository
+//@Mapper
 public interface DishMapper extends BaseMapper<Dish> {
 
 }

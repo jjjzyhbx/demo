@@ -6,6 +6,7 @@ import com.Chlin.blog.mapper.DishMapper;
 import com.Chlin.blog.service.DishService;
 import com.Chlin.blog.service.impl.DishServiceImpl;
 import com.google.gson.Gson;
+import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * <p>
@@ -28,9 +31,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class DishController {
     private Gson gson = new Gson();
 
-//    @Autowired
-//    private DishMapper dishMapper;
-    private DishService dishService=new DishServiceImpl();
+    @Autowired
+    public DishService dishService;
     /**
      * 新增一个菜
      * @param jsonData
@@ -41,12 +43,27 @@ public class DishController {
         Dish dish=new Dish();
         dish=gson.fromJson(jsonData,Dish.class);
         System.out.println("这个是dish"+dish.toString());
-        int i=0;
-        if (i!=0) {
-            return ResponseEntity.ok("修改成功");
+        final val i = dishService.save(dish);
+        if (i) {
+            return ResponseEntity.ok("添加成功");
         } else {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("修改失败");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("添加失败");
         }
+    }
+    @PostMapping("/loadDish")
+    public String loadDish(){
+        List<Dish> list = dishService.list();
+        System.out.println(list.toString());
+        return gson.toJson(list);
+    }
+
+    @PostMapping("/search")
+    public String search(@RequestBody String jsonData){
+
+        Dish dish=gson.fromJson(jsonData,Dish.class);
+        List<Dish> dishes = dishService.listByEntity(dish);
+        dishes.forEach(System.out::println);
+        return gson.toJson(dishes);
     }
 }
 

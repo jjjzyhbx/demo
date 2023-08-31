@@ -1,23 +1,38 @@
 package com.Chlin.blog.dao;
 import com.Chlin.blog.entity.Dish;
 import com.Chlin.blog.mapper.DishMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 /**
  * 菜单的Dao层
  */
+@Component
 public class DishDao {
     /**
      * 私有构造
      */
-    private DishDao() {
+    private static DishDao instance;
 
+    private DishDao() {
+        // 私有构造函数
     }
 
     public static DishDao getInstance() {
-        return new DishDao();
+        if (instance == null) {
+            instance = new DishDao();
+        }
+        return instance;
     }
+
+    private DishMapper dishMapper;
+
+    public void setDishMapper(DishMapper dishMapper) {
+        this.dishMapper = dishMapper;
+    }
+
 
     /**
      * 基本crud
@@ -29,7 +44,7 @@ public class DishDao {
      * @param
      * @return
      */
-    public List<Dish> selectAll(DishMapper dishMapper) {
+    public List<Dish> selectAll() {
         List<Dish> dishes = dishMapper.selectList(null);
         return dishes;
     }
@@ -37,25 +52,25 @@ public class DishDao {
     /**
      * 新增
      *
-     * @param dishMapper
+     * @param
      * @param dish
      * @return
      */
-    public int insertDishData(DishMapper dishMapper, Dish dish) {
+    public int insertDishData(Dish dish) {
         return dishMapper.insert(dish);
     }
 
     /**
      * 根据id更新
      */
-    public int upDataUserMassageById(DishMapper dishMapper, Dish dish) {
+    public int upDataUserMassageById( Dish dish) {
         return dishMapper.updateById(dish);
     }
 
     /**
      * 根据id删除
      */
-    public int deleteUserMassageById(DishMapper dishMapper, Dish dish) {
+    public int deleteUserMassageById(Dish dish) {
         return dishMapper.deleteById(dish);
     }
 }

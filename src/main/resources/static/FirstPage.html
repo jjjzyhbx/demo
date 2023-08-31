@@ -437,28 +437,42 @@
 
                             >
                                 <el-table-column
-                                        prop="articleName"
-                                        label="作品名称"
+                                        prop="name"
+                                        label="菜品"
                                         sortable
                                         align="center"
                                         width="180">
                                     <template scope="scope">
-                                        <div class="sub-body" @click="readArticles(scope.row)">{{scope.row.articleName}}</div>
+                                        <div class="sub-body" @click="readArticles(scope.row)">{{scope.row.name}}</div>
                                     </template>
                                 </el-table-column>
                                 <el-table-column
-                                        prop="authorName"
-                                        label="作者"
+                                        prop="price"
+                                        label="单价"
                                         align="center"
                                         sortable
                                         width="180">
                                     <template scope="scope">
-                                        <div class="sub-body" @click="viewAuthor(scope.row)">{{scope.row.authorName}}</div>
+                                        <div class="sub-body" @click="viewAuthor(scope.row)">{{scope.row.price}}</div>
                                     </template>
                                 </el-table-column>
                                 <el-table-column
-                                        prop="date"
-                                        label="发布时间"
+                                        prop="inventory"
+                                        label="库存"
+                                        align="center"
+                                        sortable
+                                >
+                                </el-table-column>
+                                <el-table-column
+                                        prop="monthlySales"
+                                        label="月销量"
+                                        align="center"
+                                        sortable
+                                >
+                                </el-table-column>
+                                <el-table-column
+                                        prop="updateTime"
+                                        label="上次发布时间"
                                         align="center"
                                         sortable
                                 >
@@ -467,7 +481,8 @@
                                         label="操作"
                                         align="center"
                                 >
-                                    <el-button size="mini">下载</el-button>
+                                    <el-button size="mini">加入购物车</el-button>
+                                    <el-button size="mini">删除</el-button>
 
 <!--                                    @click="concern"-->
                                 </el-table-column>
@@ -635,10 +650,11 @@
                *搜索
                */
               SearchData: [{
-                  articleName: '',
-                  authorName: '',
-                  date: '',
-                  article: ''
+                  name: '0',
+                  price: '1',
+                  updataTime: '2',
+                  monthlySales: '3',
+                  inventory:''
               }
               ],
               Searchs:'',
@@ -838,14 +854,22 @@
           var _this = this;
           alert(_this.dish.name+"+"+_this.dish.inventory)
           axios.post("http://localhost:90/blog/dish/newDish", _this.dish).then(function (resp) {
-              var ans = resp.data;
-              if (ans.value4) {
+              if (resp.status === 200) {
+                  // 操作成功的逻辑
                   alert("添加成功");
-                  _this.loadPage();
+                  // 执行其他操作，如跳转页面或刷新数据
               } else {
+                  // 操作失败的逻辑
                   alert("添加失败");
+                  // 执行其他操作，如显示错误信息或重新尝试操作
               }
           })
+              .catch(function (error) {
+                  // 处理请求错误的逻辑
+                  console.log(error);
+                  alert("请求出错");
+                  // 执行其他操作，如显示错误信息或重新尝试操作
+              });
       },
       loadPage() {
           var admins=document.getElementById("admin");
@@ -854,17 +878,20 @@
           }
           var _this = this;
           var a = this.ins;
+          /**
+           * 加载菜品页面
+           */
           if (a == 1) {
-              axios.post("http://localhost:90/myArticle_war/loadArticles").then(function (resp) {
+              axios.post("http://localhost:90/blog/dish/loadDish").then(function (resp) {
                   var ans = resp.data;
                   for (const an of ans) {
-                      an.date = timestampToTime(an.date)
+                      an.updataTime = timestampToTime(an.updataTime)
                   }
                   _this.tableData = ans;
 
               })
           }
-          if (a == 3) {
+          if (a ==3) {
               axios.post("http://localhost:90/myArticle_war/loadAdminPage").then(function (resp) {
                   var m2=resp.data;
                   _this.userMessage=m2;
@@ -923,15 +950,15 @@
        */
       Search() {
           var _this = this;
-          var a = {
-              Searchs: this.Searchs
+          var search = {
+              name: this.Searchs
           }
           // alert(a.Searchs)
-          axios.post("http://localhost:90/myArticle_war/search", a).then(function (resp) {
+          axios.post("http://localhost:90/blog/dish/search", search).then(function (resp) {
               var as = resp.data;
-              for (const an of as) {
-                  an.date = timestampToTime(an.date)
-              }
+              // for (const an of as) {
+              //     an.date = timestampToTime(an.date)
+              // }
               _this.SearchData = as;
 
           })

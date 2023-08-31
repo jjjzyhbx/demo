@@ -15,8 +15,8 @@ import javax.servlet.http.HttpServletRequest;
  * @since 2023-08-29
  */
 public interface UserService extends IService<User> {
-    public boolean login(UserMapper userMapper, User user);
-    public int register(UserMapper userMapper,User user);
-    public User rememberPassword(HttpServletRequest request,User user);
-    public int upUserMassage(UserMapper userMapper,User user);
+    boolean login(UserMapper userMapper, User user);
+     int register(UserMapper userMapper,User user);
+     User rememberPassword(HttpServletRequest request,User user);
+     int upUserMassage(UserMapper userMapper,User user);
 }
