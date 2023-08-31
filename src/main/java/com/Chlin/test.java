@@ -1,7 +1,10 @@
 package com.Chlin;
 
+import com.Chlin.blog.entity.Dish;
 import com.Chlin.blog.entity.User;
+import com.Chlin.blog.mapper.DishMapper;
 import com.Chlin.blog.mapper.UserMapper;
+import com.Chlin.blog.service.impl.DishServiceImpl;
 import com.Chlin.blog.service.impl.UserServiceImpl;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,13 +25,13 @@ public class test {
     public void testRegister(){
 
         User user=new User();
-        user.setId(111);
-        user.setUsername("xiaoming");
-        user.setPassword("password123");
-        user.setRealName("John Doe");
+        user.setId(1110);
+        user.setUsername("xiao");
+        user.setPassword("00000000");
+        user.setRealName("Joh");
         user.setType(0);
-        user.setStudentId("123456789");
-        user.setEmail("E123456");
+        user.setStudentId("00000000");
+        user.setEmail("E1234560");
         user.setPhone(2);
         user.setGrade(10);
         user.setBalance(new BigDecimal("1000.00"));
@@ -40,4 +43,18 @@ public class test {
 //    public void testLogin(){
 //        userService.login(userMapper);
 //    }
+    @Autowired
+    DishMapper dishMapper;
+    private DishServiceImpl dishService=new DishServiceImpl();
+    @Test
+    public void testDishINsert(){
+        dishService.setDishMapper(dishMapper);
+        Dish dish=new Dish();
+        dish.setId(1);
+        dish.setName("酸汤鱼");
+        dish.setInventory(10);
+        dish.setPrice(new BigDecimal(10));
+        dishService.insertNewDish(dish);
+
+    }
 }

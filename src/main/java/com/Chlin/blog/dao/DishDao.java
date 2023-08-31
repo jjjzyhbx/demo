@@ -41,7 +41,7 @@ public class DishDao {
      * @param dish
      * @return
      */
-    public int insertOrderData(DishMapper dishMapper, Dish dish) {
+    public int insertDishData(DishMapper dishMapper, Dish dish) {
         return dishMapper.insert(dish);
     }
 

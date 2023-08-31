@@ -28,8 +28,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class DishController {
     private Gson gson = new Gson();
 
-    @Autowired
-    private DishMapper dishMapper;
+//    @Autowired
+//    private DishMapper dishMapper;
     private DishService dishService=new DishServiceImpl();
     /**
      * 新增一个菜

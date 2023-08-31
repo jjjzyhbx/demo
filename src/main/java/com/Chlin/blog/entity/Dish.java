@@ -29,7 +29,7 @@ public class Dish implements Serializable {
 
     private BigDecimal price;
 
-    private Integer categoryId;
+    private Integer categoryId=0;
 
     private Integer monthlySales;
 
