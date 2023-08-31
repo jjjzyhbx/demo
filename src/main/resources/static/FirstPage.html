@@ -291,23 +291,29 @@
                         <template>
                             <el-button type="warning" type="text" @click="BulkDeletion" id="adminDeletion" >批量下单</el-button>
                         </template>
-                        <el-button type="primary" @click="dialogFormVisible = true" round >还没想好</el-button>
+                        <el-button type="primary" @click="dialogFormVisible = true" round >发布菜品</el-button>
                         <!--                弹出框-->
-                        <el-dialog title="" :visible.sync="dialogFormVisible">
+                        <el-dialog title="新增一个菜品" :visible.sync="dialogFormVisible">
                             <el-container>
-                                <el-header align="center">
-                                    <el-input v-model="ne.articleName" placeholder="请输入标题" ></el-input>
-                                </el-header>
-                                    正文：
-                                    <el-input
-                                            type="textarea"
-                                            placeholder="请输入内容"
-                                            :rows="20"
-                                            v-model="ne.Article"
-                                            placeholder="    ">
-                                    </el-input>
+<!--                                <el-header align="center">-->
+<!--&lt;!&ndash;                                    <el-input v-model="ne.articleName" placeholder="请输入菜名" ></el-input>&ndash;&gt;-->
+<!--                                </el-header>-->
+                                想要发布的菜名:<el-input v-model="dish.name" placeholder="请输入菜名" ></el-input>
+                                请设置单价:<el-input v-model="dish.price" placeholder="请输单价" ></el-input>
+                                请选择数量:<el-input v-model="dish.inventory" placeholder="请输入你将要发布的菜品数量" ></el-input>
+<!--                                <el-input v-model="ne.articleName" placeholder="请输入菜名" ></el-input>-->
+<!--                                <el-input v-model="ne.articleName" placeholder="请输入菜名" ></el-input>-->
+
+<!--                                    <el-input-->
+<!--                                            type="textarea"-->
+<!--                                            placeholder="请输入内容"-->
+<!--                                            :rows="20"-->
+<!--                                            v-model="ne.Article"-->
+<!--                                            placeholder="    ">-->
+<!--                                    </el-input>-->
+
                                 <el-footer align="right">
-                                    <el-button type="primary" round @click="newArticles">确认发布</el-button>
+                                    <el-button type="primary" round @click="newDish">确认发布</el-button>
                                 </el-footer>
                             </el-container>
                         </el-dialog>
@@ -336,28 +342,48 @@
                                 width="50">
                                 </el-table-column>
                                 <el-table-column
-                                        prop="articleName"
-                                        label="作品名称"
+                                        prop="name"
+                                        label="菜品"
                                         sortable
                                         align="center"
                                         width="180">
                                     <template scope="scope">
-                                        <div class="sub-body" @click="readArticles(scope.row)">{{scope.row.articleName}}</div>
+                                        <div class="sub-body" @click="readArticles(scope.row)">{{scope.row.name}}</div>
                                     </template>
                                 </el-table-column>
                                 <el-table-column
-                                        prop="authorName"
-                                        label="作者"
+                                        prop="price"
+                                        label="单价"
                                         align="center"
                                         sortable
                                         width="180">
                                     <template scope="scope">
-                                        <div class="sub-body" @click="viewAuthor(scope.row)">{{scope.row.authorName}}</div>
+                                        <div class="sub-body" @click="viewAuthor(scope.row)">{{scope.row.price}}</div>
                                     </template>
                                 </el-table-column>
                                 <el-table-column
-                                        prop="date"
-                                        label="发布时间"
+                                        prop="inventory"
+                                        label="库存"
+                                        align="center"
+                                        sortable
+                                        width="180">
+                                    <template scope="scope">
+                                        <div class="sub-body" @click="viewAuthor(scope.row)">{{scope.row.inventory}}</div>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column
+                                        prop="monthlySales"
+                                        label="月销量"
+                                        align="center"
+                                        sortable
+                                        width="180">
+                                    <template scope="scope">
+                                        <div class="sub-body" @click="viewAuthor(scope.row)">{{scope.row.monthlySales}}</div>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column
+                                        prop="updateTime"
+                                        label="最近更新时间"
                                         align="center"
                                         sortable
                                         >
@@ -368,7 +394,8 @@
                                         align="center"
                                 >
                                     <template slot-scope="scope">
-                                        <el-button size="mini" @click.native.prevent="downloads(scope.row)">下载</el-button>
+                                        <el-button size="mini" @click.native.prevent="downloads(scope.row)">加入购物车</el-button>
+                                        <el-button size="mini" @click.native.prevent="adminDelete(scope.row)">删除</el-button>
                                     </template>
 <!--                                    <el-button size="mini">下载</el-button>-->
 <!--                                    <el-button size="mini" >删除</el-button>-->
@@ -575,20 +602,35 @@
                */
               activeIndex: '3',
               multipleSelection: [],
+              // tableData: [{
+              //     articleName: '0',
+              //     authorName: '1',
+              //     date: '2',
+              //     article: '3'
+              // }
+              // ],
               tableData: [{
-                  articleName: '0',
-                  authorName: '1',
-                  date: '2',
-                  article: '3'
+                  name: '0',
+                  price: '1',
+                  updataTime: '2',
+                  monthlySales: '3',
+                  inventory:''
               }
               ],
               dialogFormVisible: false,
-              ne:
-                  {
-                      articleName: '',
-                      Article: '',
-                      authorName: ''
-                  },
+              dish:{
+                  name: '0',
+                  price: '1',
+                  updataTime: '2',
+                  monthlySales: '3',
+                  inventory:''
+              },
+              // ne:
+              //     {
+              //         articleName: '',
+              //         Article: '',
+              //         authorName: ''
+              //     },
               /**
                *搜索
                */
@@ -769,7 +811,7 @@
       },
 
       /**
-       *页面2，文章
+       *页面2，该页面转换为食堂大厅
        */
       handleSelect(key, keyPath) {
           console.log(key, keyPath);
@@ -778,10 +820,24 @@
           this.multipleSelection = val;
           console.log(this.multipleSelection)
       },
-      newArticles() {
+      // newArticles() {
+      //     var _this = this;
+      //     this.ne.authorName = this.my.username;
+      //     axios.post("http://localhost:90/myArticle_war/newArticles", this.ne).then(function (resp) {
+      //         var ans = resp.data;
+      //         if (ans.value4) {
+      //             alert("添加成功");
+      //             _this.loadPage();
+      //         } else {
+      //             alert("添加失败");
+      //         }
+      //     })
+      //
+      // },
+      newDish(){
           var _this = this;
-          this.ne.authorName = this.my.username;
-          axios.post("http://localhost:90/myArticle_war/newArticles", this.ne).then(function (resp) {
+          alert(_this.dish.name+"+"+_this.dish.inventory)
+          axios.post("http://localhost:90/blog/dish/newDish", _this.dish).then(function (resp) {
               var ans = resp.data;
               if (ans.value4) {
                   alert("添加成功");
@@ -790,7 +846,6 @@
                   alert("添加失败");
               }
           })
-
       },
       loadPage() {
           var admins=document.getElementById("admin");
