@@ -1,6 +1,6 @@
 package com.Chlin.blog.mapper;
 
-import com.Chlin.blog.entity.Order;
+import com.Chlin.blog.entity.Orders;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.springframework.stereotype.Repository;
 
@@ -13,6 +13,6 @@ import org.springframework.stereotype.Repository;
  * @since 2023-08-29
  */
 @Repository
-public interface OrderMapper extends BaseMapper<Order> {
+public interface OrdersMapper extends BaseMapper<Orders> {
 
 }

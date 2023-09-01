@@ -104,6 +104,27 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
         return list(wrapper);
     }
 
+    @Override
+    public Dish getOne(Wrapper<Dish> queryWrapper) {
+        return super.getOne(queryWrapper);
+    }
+
+    @Override
+    public Dish getById(Serializable id) {
+        return super.getById(id);
+    }
+
+    /**
+     * 根据名字或者根据价格查询
+     * @param dish
+     * @return
+     */
+    @Override
+    public Dish listByEntityID(Dish dish) {
+        QueryWrapper<Dish> wrapper = new QueryWrapper<>();
+            wrapper.like("id",dish.getId());
+        return getOne(wrapper);
+    }
 
     @Override
     public boolean update(Dish entity, Wrapper<Dish> updateWrapper) {

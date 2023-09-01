@@ -9,7 +9,7 @@ import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
 @MapperScan("com.Chlin.blog.mapper")
-//@ComponentScan("com.Chlin.blog.mapper")
+@ComponentScan("com.Chlin.blog.mapper")
 //@ComponentScan("com.Chlin.blog.controller")
 @ComponentScan("com.Chlin.blog.dao")
 @ComponentScan({"com.Chlin.blog.controller", "com.Chlin.blog.service.impl"})

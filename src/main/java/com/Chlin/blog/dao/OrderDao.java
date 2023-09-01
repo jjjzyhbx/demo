@@ -1,7 +1,7 @@
 package com.Chlin.blog.dao;
 
-import com.Chlin.blog.entity.Order;
-import com.Chlin.blog.mapper.OrderMapper;
+import com.Chlin.blog.entity.Orders;
+import com.Chlin.blog.mapper.OrdersMapper;
 import java.util.List;
 
 /**
@@ -27,31 +27,31 @@ public class OrderDao {
      * @param
      * @return
      */
-    public List<Order> selectAll(OrderMapper orderMapper){
-        List<Order> orders =orderMapper.selectList(null);
+    public List<Orders> selectAll(OrdersMapper ordersMapper){
+        List<Orders> orders = ordersMapper.selectList(null);
         return orders;
     }
 
     /**
      * 新增
-     * @param orderMapper
-     * @param order
+     * @param ordersMapper
+     * @param orders
      * @return
      */
-    public int insertOrderData(OrderMapper orderMapper, Order order){
-        return orderMapper.insert(order);
+    public int insertOrderData(OrdersMapper ordersMapper, Orders orders){
+        return ordersMapper.insert(orders);
     }
     /**
      * 根据id更新
      */
-    public int upDataUserMassageById(OrderMapper orderMapper,Order order){
-        return orderMapper.updateById(order);
+    public int upDataUserMassageById(OrdersMapper ordersMapper, Orders orders){
+        return ordersMapper.updateById(orders);
     }
 
     /**
      * 根据id删除
      */
-    public int deleteUserMassageById(OrderMapper orderMapperr,Order order){
-        return orderMapperr.deleteById(order);
+    public int deleteUserMassageById(OrdersMapper ordersMapperr, Orders orders){
+        return ordersMapperr.deleteById(orders);
     }
 }

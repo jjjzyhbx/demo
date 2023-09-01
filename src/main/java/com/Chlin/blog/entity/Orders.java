@@ -3,7 +3,7 @@ package com.Chlin.blog.entity;
 import java.math.BigDecimal;
 import com.baomidou.mybatisplus.annotation.IdType;
 import java.util.Date;
-import com.baomidou.mybatisplus.annotation.Version;
+
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serializable;
 //import io.swagger.annotations.ApiModel;
@@ -18,7 +18,7 @@ import java.io.Serializable;
  * @since 2023-08-29
  */
 //@ApiModel(value="Order对象", description="")
-public class Order implements Serializable {
+public class Orders implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -29,10 +29,13 @@ public class Order implements Serializable {
 
     private Integer dishId;
 
+    //购买数量
     private Integer count;
 
+    //单个金额
     private BigDecimal amount;
 
+    //支付金额paid=count+amount
     private BigDecimal paidAmount;
 
 //        @ApiModelProperty(value = "状态:0-未付款,1-已付款")
@@ -50,7 +53,7 @@ public class Order implements Serializable {
         return id;
     }
 
-    public Order setId(Integer id) {
+    public Orders setId(Integer id) {
         this.id = id;
         return this;
     }
@@ -59,7 +62,7 @@ public class Order implements Serializable {
         return userId;
     }
 
-    public Order setUserId(Integer userId) {
+    public Orders setUserId(Integer userId) {
         this.userId = userId;
         return this;
     }
@@ -68,7 +71,7 @@ public class Order implements Serializable {
         return dishId;
     }
 
-    public Order setDishId(Integer dishId) {
+    public Orders setDishId(Integer dishId) {
         this.dishId = dishId;
         return this;
     }
@@ -77,7 +80,7 @@ public class Order implements Serializable {
         return count;
     }
 
-    public Order setCount(Integer count) {
+    public Orders setCount(Integer count) {
         this.count = count;
         return this;
     }
@@ -86,7 +89,7 @@ public class Order implements Serializable {
         return amount;
     }
 
-    public Order setAmount(BigDecimal amount) {
+    public Orders setAmount(BigDecimal amount) {
         this.amount = amount;
         return this;
     }
@@ -95,7 +98,7 @@ public class Order implements Serializable {
         return paidAmount;
     }
 
-    public Order setPaidAmount(BigDecimal paidAmount) {
+    public Orders setPaidAmount(BigDecimal paidAmount) {
         this.paidAmount = paidAmount;
         return this;
     }
@@ -104,7 +107,7 @@ public class Order implements Serializable {
         return status;
     }
 
-    public Order setStatus(Integer status) {
+    public Orders setStatus(Integer status) {
         this.status = status;
         return this;
     }
@@ -113,7 +116,7 @@ public class Order implements Serializable {
         return payType;
     }
 
-    public Order setPayType(Integer payType) {
+    public Orders setPayType(Integer payType) {
         this.payType = payType;
         return this;
     }
@@ -122,7 +125,7 @@ public class Order implements Serializable {
         return completeTime;
     }
 
-    public Order setCompleteTime(Date completeTime) {
+    public Orders setCompleteTime(Date completeTime) {
         this.completeTime = completeTime;
         return this;
     }
@@ -131,14 +134,14 @@ public class Order implements Serializable {
         return createTime;
     }
 
-    public Order setCreateTime(Date createTime) {
+    public Orders setCreateTime(Date createTime) {
         this.createTime = createTime;
         return this;
     }
 
     @Override
     public String toString() {
-        return "Order{" +
+        return "Orders{" +
         "id=" + id +
         ", userId=" + userId +
         ", dishId=" + dishId +

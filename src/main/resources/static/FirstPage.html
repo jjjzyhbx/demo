@@ -342,6 +342,16 @@
                                 width="50">
                                 </el-table-column>
                                 <el-table-column
+                                        prop=id"
+                                        label=""
+                                        sortable
+                                        align="center"
+                                        width="180">
+                                    <template scope="scope">
+                                        <div class="sub-body" @click="readArticles(scope.row)"></div>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column
                                         prop="name"
                                         label="菜品"
                                         sortable
@@ -628,6 +638,7 @@
               // }
               // ],
               tableData: [{
+                  id:'',
                   name: '0',
                   price: '1',
                   updateTime: '2',
@@ -1102,15 +1113,16 @@
 
 
       addShopping(row){
-          alert("加入购物车")
+          // let date=new Date(row.updateTime)
           thisDish={
+              id:row.id,
               name: row.name,
               price: row.price,
-              updateTime: row.updateTime,
+              // updateTime:date.getTime(),
               monthlySales: row.monthlySales,
               inventory:row.inventory
           }
-          axios.post("http://localhost:90/blog/order/addShopping", thisDish).then(function (resp) {
+          axios.post("http://localhost:90/blog/dish/addShop", thisDish).then(function (resp) {
               if (resp.status === 200) {
                   // 操作成功的逻辑
                   alert("加入成功");
@@ -1225,35 +1237,38 @@
       /**
        * 阅读
        */
-      readArticles(row) {
-          var a = row
-          axios.post("http://localhost:90/myArticle_war/forwards", a.articleName).then(function (resp) {
-              window.location.href = 'artic.html';
-          })
-      },
-      /**
-       * 查看作者
-       */
-      viewAuthor(row) {
-          var a1 = {
-              authorName: row.authorName
-          }
-          axios.post("http://localhost:90/myArticle_war/setAuthor", a1).then(function (resp) {
-              window.location.href = 'concern.html';
-          })
-      },
-      viewAuthors(row) {
-          var a1 = {
-              authorName: row.username
-          }
-          axios.post("http://localhost:90/myArticle_war/setAuthor", a1).then(function (resp) {
-              window.location.href = 'concern.html';
-          })
-      },
+      // readArticles(row) {
+      //     var a = row
+      //     axios.post("http://localhost:90/myArticle_war/forwards", a.articleName).then(function (resp) {
+      //         window.location.href = 'artic.html';
+      //     })
+      // },
+      // /**
+      //  * 查看作者
+      //  */
+      // viewAuthor(row) {
+      //     var a1 = {
+      //         authorName: row.authorName
+      //     }
+      //     axios.post("http://localhost:90/myArticle_war/setAuthor", a1).then(function (resp) {
+      //         window.location.href = 'concern.html';
+      //     })
+      // },
+      // viewAuthors(row) {
+      //     var a1 = {
+      //         authorName: row.username
+      //     }
+      //     axios.post("http://localhost:90/myArticle_war/setAuthor", a1).then(function (resp) {
+      //         window.location.href = 'concern.html';
+      //     })
+      // },
       run() {
           alert('kjsdb')
       },
 
+      /**
+       * 管理员权限
+       */
       handleEdit(index, row) {
           var _this=this;
           var a={
@@ -1261,25 +1276,30 @@
               id:row.id
           }
           let set=false;
-          axios.post("http://localhost:90/myArticle_war/setAdmin",a).then(function (resp){
+          axios.post("http://localhost:90/blog/user/setAdmin",a).then(function (resp){
               var a1=resp.data;
               set=a1.set;
           })
 
       },
+      /**
+       * 管理员封号
+       */
       handleDelete(index, row) {
           var _this=this;
           var a2={
-              username:row.username,
-              id:row.id
+              studentId:row.id
           }
           let set=false;
-      axios.post("http://localhost:90/myArticle_war/banUser",a2).then(function (resp){
-          var a3=resp.data;
+      axios.post("http://localhost:90/blog/user/banUser",a2).then(function (resp){
+          // var a3=resp.data;
       })
       },
+      /**
+       * 退出登录
+       */
       signOut(){
-          axios.post("http://localhost:90/myArticle_war/sign").then(function (resp){
+          axios.post("http://localhost:90/blog/user/sign").then(function (resp){
           })
           window.location.href="login.html";
       }

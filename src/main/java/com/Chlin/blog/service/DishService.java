@@ -19,6 +19,7 @@ public interface DishService extends IService<Dish> {
 
     List<Dish> listByEntity(Dish dish);
     boolean updateBatchByDishList(List<Dish> dishList);
+    Dish listByEntityID(Dish dish);
 
 
 }

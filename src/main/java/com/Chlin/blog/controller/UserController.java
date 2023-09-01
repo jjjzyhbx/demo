@@ -171,5 +171,35 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("修改失败");
         }
     }
+
+    /**
+     * 设置管理员
+     * @param jsonData
+     * @return
+     */
+    @PostMapping("/setAdmin")
+    public ResponseEntity<String> adminSet(@RequestBody String jsonData){
+        return ResponseEntity.ok("设置成功");
+    }
+
+    /**
+     * 管理员封号
+     * @param jsonData
+     * @return
+     */
+    @PostMapping("/banUser")
+    public ResponseEntity<String> adminBanUser(@RequestBody String jsonData){
+        return ResponseEntity.ok("设置成功");
+    }
+
+    /**
+     * 用户退出登录
+     * @param jsonData
+     * @return
+     */
+    @PostMapping("/sign")
+    public ResponseEntity<String> signOut(@RequestBody String jsonData){
+        return ResponseEntity.ok("设置成功");
+    }
 }
 
