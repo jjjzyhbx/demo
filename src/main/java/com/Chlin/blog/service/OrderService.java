@@ -19,6 +19,7 @@ public interface OrderService extends IService<Orders> {
     Orders createOrder(User user, Dish dish);
 
     List<Orders> listByUserStudentId(Integer intger);
+    Orders listByUseridAndDishId(Orders orders);
 
     void setOrder(Orders order);
     boolean removeByUseridAndDishId(Integer userid,Integer dishId);

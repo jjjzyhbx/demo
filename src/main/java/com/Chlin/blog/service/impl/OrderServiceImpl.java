@@ -108,5 +108,12 @@ public class OrderServiceImpl extends ServiceImpl<OrdersMapper, Orders> implemen
         return super.remove(queryWrapper);
     }
 
-
+    @Override
+    public Orders listByUseridAndDishId(Orders orders) {
+        QueryWrapper<Orders> queryWrapper=new QueryWrapper<>();
+        queryWrapper.like("user_id",orders.getUserId());
+        queryWrapper.like("dish_id",orders.getDishId());
+        super.listObjs(queryWrapper).forEach(System.out::println);
+        return  new Orders();
+    }
 }

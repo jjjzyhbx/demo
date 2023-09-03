@@ -88,11 +88,17 @@ public class test {
         dish.setPrice(new BigDecimal(16));
 //        dishService.listByEntity(dish).forEach(System.out::println);
         dish.setId(1);
-//         val order = orderService.createOrder(user, dish);
-
+         val order = orderService.createOrder(user, dish);
+         order.setId(2);
+         orderService.save(order);
 //        final val dish1 = dishService.listByEntityID(dish);
-        final val byId = dishService.getById(dish.getId());
-        System.out.println(byId);
+//        final val byId = dishService.getById(dish.getId());
+//        System.out.println(byId);
+//        Orders orders=new Orders();
+//        orders.setUserId(2);
+//        orders.setDishId(2);
+//        final val orders1 = orderService.listByUseridAndDishId(orders);
+//        System.out.println(orders1);
 //         orderService.save(order);
 
 //        orderService.listByUserStudentId(1).forEach(System.out::println);
